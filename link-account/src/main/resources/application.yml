@@ -1,0 +1,24 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: link-account
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 212.129.255.88:8848
+        username: nacos
+        password: nacos
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://212.129.255.88:3306/shortlink_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: pl1008666.
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+sms:
+  app-code: 39dafca34fae4f95ac2593d6c7b292da
+  template-id: M105EABDEC
