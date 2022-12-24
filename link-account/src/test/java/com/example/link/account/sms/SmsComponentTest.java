@@ -21,7 +21,6 @@ public class SmsComponentTest {
 
     @Test
     public void testSms(){
-        smsComponent.send("18107024620","1234");
     }
 
 }
