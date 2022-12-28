@@ -14,6 +14,21 @@ spring:
     url: jdbc:mysql://212.129.255.88:3306/shortlink_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: pl1008666.
+  redis:
+    client-type: jedis
+    host: 212.129.255.88
+    password: pl1008666.
+    port: 6379
+    jedis:
+      pool:
+        # 连接池的最大连接数(使用负值表示没有限制)
+        max-active: 100
+        # 连接池中的最大空闲连接
+        max-idle: 100
+        # 连接池中的最小空闲连接
+        min-idle: 100
+        # 连接池最大阻塞等待时间 (使用复制表示没有限制)
+        max-wait: 60000
 
 mybatis-plus:
   configuration:

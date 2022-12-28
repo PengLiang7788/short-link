@@ -1,9 +1,9 @@
 package com.example.shortlink.account.component;
 
 import com.example.shortlink.account.config.SmsConfig;
-import com.example.shortlink.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,6 +33,7 @@ public class SmsComponent {
      * @param templateId
      * @param value
      */
+    @Async("threadPoolTaskExecutor")
     public void send(String to,String templateId,String value){
         String url = String.format(URL_TEMPLATE,to,templateId,value);
         HttpHeaders headers = new HttpHeaders();

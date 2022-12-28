@@ -14,14 +14,4 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class NotifyServiceImpl implements NotifyService {
 
-
-
-    @Override
-    public void testSend() {
-        try {
-            TimeUnit.MILLISECONDS.sleep(200);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
