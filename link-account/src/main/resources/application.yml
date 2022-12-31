@@ -51,3 +51,11 @@ mybatis-plus:
 sms:
   app-code: 39dafca34fae4f95ac2593d6c7b292da
   template-id: M105EABDEC
+
+# 阿里云OSS配置
+aliyun:
+  oss:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    access-key-id: LTAI5tAtoRgNimet8jE4RMa9
+    access-key-secret: QzwwDCB23IHj0c4FkYdmb0bUKHfVkq
+    bucketname: peng-short-link
