@@ -1,14 +1,16 @@
 package com.example.shortlink.account.controller;
 
+import com.example.shortlink.account.controller.request.SendCodeRequest;
 import com.example.shortlink.account.service.NotifyService;
+import com.example.shortlink.common.enums.BizCodeEnum;
+import com.example.shortlink.common.enums.SendCodeEnum;
 import com.example.shortlink.common.util.CommonUtil;
+import com.example.shortlink.common.util.JsonData;
 import com.google.code.kaptcha.Producer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -64,6 +66,23 @@ public class NotifyController {
         String key = "account-service:captcha:" + CommonUtil.MD5(ip + userAgent);
         log.info("验证码key:{}", key);
         return key;
+    }
+
+    @PostMapping("/send_code")
+    public JsonData sendCode(@RequestBody SendCodeRequest sendCodeRequest, HttpServletRequest request) {
+        String key = getCaptchaKey(request);
+
+        String cacheCaptcha = redisTemplate.opsForValue().get(key);
+        String captcha = sendCodeRequest.getCaptcha();
+        if (cacheCaptcha != null && captcha != null && cacheCaptcha.equalsIgnoreCase(captcha)) {
+            // 成功
+            redisTemplate.delete(key);
+            JsonData jsonData = notifyService.sendCode(SendCodeEnum.USER_REGISTER, sendCodeRequest.getTo());
+            return jsonData;
+        } else {
+            // 失败
+            return JsonData.buildResult(BizCodeEnum.CODE_CAPTCHA_ERROR);
+        }
     }
 
 

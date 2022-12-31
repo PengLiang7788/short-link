@@ -1,8 +1,20 @@
 package com.example.shortlink.account.service.impl;
 
+import com.example.shortlink.account.component.SmsComponent;
+import com.example.shortlink.account.config.SmsConfig;
 import com.example.shortlink.account.service.NotifyService;
+import com.example.shortlink.common.constant.RedisKey;
+import com.example.shortlink.common.enums.BizCodeEnum;
+import com.example.shortlink.common.enums.SendCodeEnum;
+import com.example.shortlink.common.util.CheckUtil;
+import com.example.shortlink.common.util.CommonUtil;
+import com.example.shortlink.common.util.JsonData;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,4 +26,82 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class NotifyServiceImpl implements NotifyService {
 
+    /**
+     * 验证码过期时间，单位：分钟
+     */
+    private static final int CODE_EXPIRED = 10;
+
+    @Autowired
+    private SmsComponent smsComponent;
+
+    @Autowired
+    private SmsConfig smsConfig;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    /**
+     * 发送验证码
+     *
+     * @param sendCodeEnum
+     * @param to
+     */
+    @Override
+    public JsonData sendCode(SendCodeEnum sendCodeEnum, String to) {
+        // 校验是否重复发送验证码
+        String cacheKey = String.format(RedisKey.CHECK_CODE_KEY, sendCodeEnum.name(), to);
+        String cacheValue = redisTemplate.opsForValue().get(cacheKey);
+        // 如果不为空，再判断是否是60秒内重复发送 0123_23232321213
+        if (StringUtils.isNotBlank(cacheValue)) {
+            long ttl = Long.parseLong(cacheValue.split("_")[1]);
+            // 当前时间戳-验证码发送的时间戳，如果小于60秒，则不给重复发送
+            long leftTime = CommonUtil.getCurrentTimestamp() - ttl;
+            if (leftTime < (1000 * 60)) {
+                log.info("重复发送短信验证码，时间间隔:{}秒", leftTime);
+                return JsonData.buildResult(BizCodeEnum.CODE_LIMITED);
+            }
+        }
+
+        // 生成验证码
+        String code = CommonUtil.getRandomCode(6);
+        // 拼接生成key
+        String value = code + "_" + CommonUtil.getCurrentTimestamp();
+        // 存储到redis中
+        redisTemplate.opsForValue().set(cacheKey,value,CODE_EXPIRED, TimeUnit.MINUTES);
+        if (CheckUtil.isEmail(to)) {
+            //TODO 发送邮箱验证码
+        } else if (CheckUtil.isPhone(to)) {
+            // 发送手机验证码
+            smsComponent.send(to, smsConfig.getTemplateId(), code);
+        }
+        return JsonData.buildSuccess();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
