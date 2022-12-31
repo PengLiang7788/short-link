@@ -14,7 +14,7 @@ public class CheckUtil {
     /**
      * 邮箱正则
      */
-    private static final Pattern MAIL_PATTERN = Pattern.compile("/^[A-Za-z0-9]+([_\\.][A-Za-z0-9]+)*@([A-Za-z0-9\\-]+\\.)+[A-Za-z]{2,6}$/");
+    private static final Pattern MAIL_PATTERN = Pattern.compile("^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$");
 
     /**
      * 手机号正则

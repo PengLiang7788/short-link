@@ -1,5 +1,6 @@
 package com.example.shortlink.account.service.impl;
 
+import com.example.shortlink.account.component.MailComponent;
 import com.example.shortlink.account.component.SmsComponent;
 import com.example.shortlink.account.config.SmsConfig;
 import com.example.shortlink.account.service.NotifyService;
@@ -31,6 +32,10 @@ public class NotifyServiceImpl implements NotifyService {
      */
     private static final int CODE_EXPIRED = 10;
 
+    private static final String SUBJECT = "短链平台验证码";
+
+    private static final String CONTENT = "您的验证码为%s,有效期为10分钟,打死也不要告诉别人";
+
     @Autowired
     private SmsComponent smsComponent;
 
@@ -38,10 +43,10 @@ public class NotifyServiceImpl implements NotifyService {
     private SmsConfig smsConfig;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private StringRedisTemplate redisTemplate;
 
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private MailComponent mailComponent;
 
     /**
      * 发送验证码
@@ -72,7 +77,9 @@ public class NotifyServiceImpl implements NotifyService {
         // 存储到redis中
         redisTemplate.opsForValue().set(cacheKey,value,CODE_EXPIRED, TimeUnit.MINUTES);
         if (CheckUtil.isEmail(to)) {
-            //TODO 发送邮箱验证码
+            // 发送邮箱验证码
+            mailComponent.sendMail(to,SUBJECT,String.format(CONTENT,code));
+
         } else if (CheckUtil.isPhone(to)) {
             // 发送手机验证码
             smsComponent.send(to, smsConfig.getTemplateId(), code);

@@ -29,6 +29,20 @@ spring:
         min-idle: 100
         # 连接池最大阻塞等待时间 (使用复制表示没有限制)
         max-wait: 60000
+  mail:
+    host: smtp.163.com
+    username: m18107024620@163.com
+    password: LZHBTKVUDYXRRNYB
+    from: m18107024620@163.com
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+    default-encoding: UTF-8
 
 mybatis-plus:
   configuration:

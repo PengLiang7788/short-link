@@ -18,7 +18,6 @@ public class ThreadPoolTaskConfig {
     @Bean("threadPoolTaskExecutor")
     public ThreadPoolTaskExecutor threadPoolTaskExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-
         // 线程池创建的核心线程数，线程池维护线程的最少数量，即使没有任务需要执行，也会一直存活
         // 如果设置allCoreThreadTimeout=true(默认false)时，核心线程会超时关闭
         executor.setCorePoolSize(16);
