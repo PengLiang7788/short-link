@@ -12,6 +12,7 @@ import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.enums.SendCodeEnum;
 import com.example.shortlink.common.model.LoginUser;
 import com.example.shortlink.common.util.CommonUtil;
+import com.example.shortlink.common.util.JWTUtil;
 import com.example.shortlink.common.util.JsonData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Md5Crypt;
@@ -69,12 +70,12 @@ public class AccountServiceImpl implements AccountService {
         // 密码设置 密钥 盐
         accountDO.setSecret("$1$" + CommonUtil.getStringNumRandom(8));
         // 对密码进行加密
-        String cryptPwd = Md5Crypt.md5Crypt(registerRequest.getPwd().getBytes(),accountDO.getSecret());
+        String cryptPwd = Md5Crypt.md5Crypt(registerRequest.getPwd().getBytes(), accountDO.getSecret());
         accountDO.setPwd(cryptPwd);
 
         // 插入数据
         int rows = accountManager.insert(accountDO);
-        log.info("rows:{},注册成功:{}",rows,accountDO);
+        log.info("rows:{},注册成功:{}", rows, accountDO);
 
         // 用户注册成功，发放福利 TODO
         userRegisterInitTask(accountDO);
@@ -83,6 +84,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * 用户登陆
+     *
      * @param loginRequest
      * @return
      */
@@ -90,30 +92,26 @@ public class AccountServiceImpl implements AccountService {
     public JsonData login(AccountLoginRequest loginRequest) {
         List<AccountDO> accountDOList =
                 accountManager.findByPhone(loginRequest.getPhone());
-        if (accountDOList != null && accountDOList.size() == 1){
+        if (accountDOList != null && accountDOList.size() == 1) {
             AccountDO accountDO = accountDOList.get(0);
             String md5Crypt = Md5Crypt.md5Crypt(loginRequest.getPwd().getBytes(), accountDO.getSecret());
-            if (md5Crypt.equals(accountDO.getPwd())){
+            if (md5Crypt.equals(accountDO.getPwd())) {
                 LoginUser loginUser = LoginUser.builder().build();
-                BeanUtils.copyProperties(loginRequest,loginUser);
-
-                //TODO 生成TOKEN JWT
-
-
-                return JsonData.buildSuccess();
-
+                BeanUtils.copyProperties(loginRequest, loginUser);
+                // 生成TOKEN JWT
+                String token = JWTUtil.geneJsonWebToken(loginUser);
+                return JsonData.buildSuccess(token);
             } else {
                 return JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
             }
-
-
-        }else {
+        } else {
             return JsonData.buildResult(BizCodeEnum.ACCOUNT_UNREGISTER);
         }
     }
 
     /**
      * 用户初始化，发放福利:发放流量包 TODO
+     *
      * @param accountDO
      */
     private void userRegisterInitTask(AccountDO accountDO) {
