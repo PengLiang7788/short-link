@@ -3,6 +3,14 @@ server:
 spring:
   application:
     name: link-account
+  servlet:
+    multipart:
+      # 是否启用http上传
+      enabled: true
+      # 最大单个文件大小
+      max-file-size: 5MB
+      # 最大请求文件的大小
+      max-request-size: 10MB
   cloud:
     nacos:
       discovery:

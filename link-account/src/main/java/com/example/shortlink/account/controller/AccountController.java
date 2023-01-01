@@ -1,13 +1,13 @@
 package com.example.shortlink.account.controller;
 
+import com.example.shortlink.account.controller.request.AccountRegisterRequest;
+import com.example.shortlink.account.model.AccountDO;
+import com.example.shortlink.account.service.AccountService;
 import com.example.shortlink.account.service.FileService;
 import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.util.JsonData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -21,10 +21,13 @@ public class AccountController {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private AccountService accountService;
+
     /**
-     * 文件上传  默认最大1M
-     *
-     * @param file
+     * 文件上传  SpringBoot默认文件最大1M
+     * 通过在yml中配置 spring.servlet.multipart.max-file-size 来设置默认上传文件的大小
+     * @param file 上传的文件
      * @return
      */
     @PostMapping("upload")
@@ -34,4 +37,16 @@ public class AccountController {
 
         return result != null ? JsonData.buildSuccess(result) : JsonData.buildResult(BizCodeEnum.FILE_UPLOAD_USER_IMG_FAIL);
     }
+
+    /**
+     * 用户注册
+     * @param registerRequest
+     * @return
+     */
+    @PostMapping("register")
+    public JsonData register(@RequestBody AccountRegisterRequest registerRequest){
+        JsonData jsonData = accountService.register(registerRequest);
+        return jsonData;
+    }
+
 }
