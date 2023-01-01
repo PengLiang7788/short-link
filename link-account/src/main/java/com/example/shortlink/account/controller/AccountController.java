@@ -2,7 +2,6 @@ package com.example.shortlink.account.controller;
 
 import com.example.shortlink.account.controller.request.AccountLoginRequest;
 import com.example.shortlink.account.controller.request.AccountRegisterRequest;
-import com.example.shortlink.account.model.AccountDO;
 import com.example.shortlink.account.service.AccountService;
 import com.example.shortlink.account.service.FileService;
 import com.example.shortlink.common.enums.BizCodeEnum;
@@ -16,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @create 2022-12-21 14:37
  */
 @RestController
-@RequestMapping("/api/v1/account")
+@RequestMapping("/api/account/v1")
 public class AccountController {
 
     @Autowired

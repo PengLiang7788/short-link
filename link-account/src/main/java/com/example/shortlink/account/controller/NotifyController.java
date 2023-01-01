@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @create 2022-12-23 13:46
  */
 @RestController
-@RequestMapping("/api/account/v1")
+@RequestMapping("/api/notify/v1")
 @Slf4j
 public class NotifyController {
 
