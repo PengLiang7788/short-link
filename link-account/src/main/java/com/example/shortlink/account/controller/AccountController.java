@@ -1,5 +1,6 @@
 package com.example.shortlink.account.controller;
 
+import com.example.shortlink.account.controller.request.AccountLoginRequest;
 import com.example.shortlink.account.controller.request.AccountRegisterRequest;
 import com.example.shortlink.account.model.AccountDO;
 import com.example.shortlink.account.service.AccountService;
@@ -27,6 +28,7 @@ public class AccountController {
     /**
      * 文件上传  SpringBoot默认文件最大1M
      * 通过在yml中配置 spring.servlet.multipart.max-file-size 来设置默认上传文件的大小
+     *
      * @param file 上传的文件
      * @return
      */
@@ -40,12 +42,19 @@ public class AccountController {
 
     /**
      * 用户注册
+     *
      * @param registerRequest
      * @return
      */
     @PostMapping("register")
-    public JsonData register(@RequestBody AccountRegisterRequest registerRequest){
+    public JsonData register(@RequestBody AccountRegisterRequest registerRequest) {
         JsonData jsonData = accountService.register(registerRequest);
+        return jsonData;
+    }
+
+    @PostMapping("login")
+    public JsonData login(@RequestBody AccountLoginRequest loginRequest) {
+        JsonData jsonData = accountService.login(loginRequest);
         return jsonData;
     }
 

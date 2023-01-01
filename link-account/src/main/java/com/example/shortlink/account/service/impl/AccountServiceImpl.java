@@ -1,6 +1,7 @@
 package com.example.shortlink.account.service.impl;
 
 import com.alibaba.nacos.common.utils.MD5Utils;
+import com.example.shortlink.account.controller.request.AccountLoginRequest;
 import com.example.shortlink.account.controller.request.AccountRegisterRequest;
 import com.example.shortlink.account.manager.AccountManager;
 import com.example.shortlink.account.model.AccountDO;
@@ -9,6 +10,7 @@ import com.example.shortlink.account.service.NotifyService;
 import com.example.shortlink.common.enums.AuthTypeEnum;
 import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.enums.SendCodeEnum;
+import com.example.shortlink.common.model.LoginUser;
 import com.example.shortlink.common.util.CommonUtil;
 import com.example.shortlink.common.util.JsonData;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author 彭亮
@@ -75,6 +79,37 @@ public class AccountServiceImpl implements AccountService {
         // 用户注册成功，发放福利 TODO
         userRegisterInitTask(accountDO);
         return JsonData.buildSuccess();
+    }
+
+    /**
+     * 用户登陆
+     * @param loginRequest
+     * @return
+     */
+    @Override
+    public JsonData login(AccountLoginRequest loginRequest) {
+        List<AccountDO> accountDOList =
+                accountManager.findByPhone(loginRequest.getPhone());
+        if (accountDOList != null && accountDOList.size() == 1){
+            AccountDO accountDO = accountDOList.get(0);
+            String md5Crypt = Md5Crypt.md5Crypt(loginRequest.getPwd().getBytes(), accountDO.getSecret());
+            if (md5Crypt.equals(accountDO.getPwd())){
+                LoginUser loginUser = LoginUser.builder().build();
+                BeanUtils.copyProperties(loginRequest,loginUser);
+
+                //TODO 生成TOKEN JWT
+
+
+                return JsonData.buildSuccess();
+
+            } else {
+                return JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
+            }
+
+
+        }else {
+            return JsonData.buildResult(BizCodeEnum.ACCOUNT_UNREGISTER);
+        }
     }
 
     /**

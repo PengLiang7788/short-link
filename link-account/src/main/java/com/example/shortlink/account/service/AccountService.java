@@ -1,5 +1,6 @@
 package com.example.shortlink.account.service;
 
+import com.example.shortlink.account.controller.request.AccountLoginRequest;
 import com.example.shortlink.account.controller.request.AccountRegisterRequest;
 import com.example.shortlink.common.util.JsonData;
 
@@ -14,4 +15,12 @@ public interface AccountService {
      * @return
      */
     JsonData register(AccountRegisterRequest registerRequest);
+
+    /**
+     * 用户登陆
+     * @param loginRequest
+     * @return
+     */
+    JsonData login(AccountLoginRequest loginRequest);
+
 }
