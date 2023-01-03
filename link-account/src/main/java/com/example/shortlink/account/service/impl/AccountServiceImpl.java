@@ -12,6 +12,7 @@ import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.enums.SendCodeEnum;
 import com.example.shortlink.common.model.LoginUser;
 import com.example.shortlink.common.util.CommonUtil;
+import com.example.shortlink.common.util.IDUtil;
 import com.example.shortlink.common.util.JWTUtil;
 import com.example.shortlink.common.util.JsonData;
 import lombok.extern.slf4j.Slf4j;
@@ -62,8 +63,8 @@ public class AccountServiceImpl implements AccountService {
         AccountDO accountDO = new AccountDO();
         BeanUtils.copyProperties(registerRequest, accountDO);
 
-        //TODO 生成唯一账号
-        accountDO.setAccountNo(CommonUtil.getCurrentTimestamp());
+        // 生成唯一账号
+        accountDO.setAccountNo(Long.parseLong(IDUtil.generateSnowFlakeID().toString()));
 
         // 设置认证级别 默认级别
         accountDO.setAuth(AuthTypeEnum.DEFAULT.name());

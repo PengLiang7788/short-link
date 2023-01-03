@@ -17,12 +17,6 @@ spring:
         server-addr: 212.129.255.88:8848
         username: nacos
         password: nacos
-  # 数据库配置
-  #  datasource:
-  #    driver-class-name: com.mysql.cj.jdbc.Driver
-  #    url: jdbc:mysql://212.129.255.88:3306/shortlink_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-  #    username: root
-  #    password: pl1008666.
   redis:
     client-type: jedis
     host: 212.129.255.88
@@ -88,19 +82,12 @@ spring:
             column: id
             props:
               worker:
-                id: 0
+                id: ${workId}
             #id生成策略
             type: SNOWFLAKE
-
-#mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
-
 sms:
   app-code: 39dafca34fae4f95ac2593d6c7b292da
   template-id: M105EABDEC
-
 # 阿里云OSS配置
 aliyun:
   oss:
