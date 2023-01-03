@@ -84,13 +84,13 @@ spring:
               algorithm-expression: traffic_$->{ account_no % 2 }
               sharding-column: account_no
           #id生成策略
-#          key-generator:
-#            column: id
-#            props:
-#              worker:
-#                id: ${workId}
-#            #id生成策略
-#            type: SNOWFLAKE
+          key-generator:
+            column: id
+            props:
+              worker:
+                id: 0
+            #id生成策略
+            type: SNOWFLAKE
 
 #mybatis-plus:
 #  configuration:
