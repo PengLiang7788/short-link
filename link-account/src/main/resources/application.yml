@@ -85,6 +85,7 @@ spring:
                 id: ${workId}
             #id生成策略
             type: SNOWFLAKE
+
 sms:
   app-code: 39dafca34fae4f95ac2593d6c7b292da
   template-id: M105EABDEC
