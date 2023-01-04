@@ -1,6 +1,8 @@
 package com.example.shortlink.link.component;
 
 import com.example.shortlink.common.util.CommonUtil;
+import com.example.shortlink.link.strategy.ShardingDBConfig;
+import com.example.shortlink.link.strategy.ShardingTableConfig;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,7 +29,9 @@ public class ShortLinkComponent {
         //进制转换
         String code = encodeToBase62(murmurHash);
 
-        return code;
+        String shortLinkCode = ShardingDBConfig.getRandomDBPrefix() + code + ShardingTableConfig.getRandomTableSuffix();
+
+        return shortLinkCode;
     }
 
     /**
