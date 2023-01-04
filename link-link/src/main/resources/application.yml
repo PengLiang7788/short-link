@@ -89,6 +89,13 @@ spring:
                 id: ${workId}
             #id生成策略
             type: SNOWFLAKE
+        # 先进行水平分库，然后再进行水平分表
+        short_link:
+          database-strategy:
+            standard:
+              sharding-column: code
+              precise-algorithm-class-name: com.example.shortlink.link.strategy.CustomDBPreciseShardingAlgorithm
+
 
 
 
