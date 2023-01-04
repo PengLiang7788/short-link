@@ -95,7 +95,20 @@ spring:
             standard:
               sharding-column: code
               precise-algorithm-class-name: com.example.shortlink.link.strategy.CustomDBPreciseShardingAlgorithm
+          # 真实库，逻辑表
+          actual-data-nodes: ds0.short_link,ds1.short_link,dsa.short_link
+          table-strategy:
+            standard:
+              sharding-column: code
+              precise-algorithm-class-name: com.example.shortlink.link.strategy.CustomTablePreciseShardingAlgorithm
 
+          # id生成策略
+          key-generator:
+            column: id
+            type: SNOWFLAKE
+            props:
+              worker:
+                id: ${workId}
 
 
 
