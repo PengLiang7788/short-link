@@ -32,7 +32,7 @@ spring:
         show: true
     datasource:
       #数据源名称
-      names: ds0,ds1
+      names: ds0,ds1,dsa
       # ds0配置
       ds0:
         connectionTimeoutMilliseconds: 30000
@@ -52,6 +52,19 @@ spring:
         driver-class-name: com.mysql.cj.jdbc.Driver
         idleTimeoutMilliseconds: 60000
         jdbc-url: jdbc:mysql://212.129.255.88:3306/link_1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+        maintenanceIntervalMilliseconds: 30000
+        maxLifetimeMilliseconds: 1800000
+        maxPoolSize: 50
+        minPoolSize: 50
+        username: root
+        password: pl1008666.
+        type: com.zaxxer.hikari.HikariDataSource
+      # dsa配置
+      dsa:
+        connectionTimeoutMilliseconds: 30000
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        idleTimeoutMilliseconds: 60000
+        jdbc-url: jdbc:mysql://212.129.255.88:3306/link_a?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
         maintenanceIntervalMilliseconds: 30000
         maxLifetimeMilliseconds: 1800000
         maxPoolSize: 50
