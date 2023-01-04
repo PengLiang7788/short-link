@@ -98,7 +98,7 @@ public class AccountServiceImpl implements AccountService {
             String md5Crypt = Md5Crypt.md5Crypt(loginRequest.getPwd().getBytes(), accountDO.getSecret());
             if (md5Crypt.equals(accountDO.getPwd())) {
                 LoginUser loginUser = LoginUser.builder().build();
-                BeanUtils.copyProperties(loginRequest, loginUser);
+                BeanUtils.copyProperties(accountDO, loginUser);
                 // 生成TOKEN JWT
                 String token = JWTUtil.geneJsonWebToken(loginUser);
                 return JsonData.buildSuccess(token);

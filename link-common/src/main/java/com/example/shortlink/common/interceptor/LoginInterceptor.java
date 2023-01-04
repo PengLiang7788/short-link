@@ -5,11 +5,8 @@ import com.example.shortlink.common.model.LoginUser;
 import com.example.shortlink.common.util.CommonUtil;
 import com.example.shortlink.common.util.JWTUtil;
 import com.example.shortlink.common.util.JsonData;
-import feign.Request;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpMessage;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -44,11 +41,11 @@ public class LoginInterceptor implements HandlerInterceptor {
                 return false;
             }
             long accountNo = Long.parseLong(claims.get("account_no").toString());
-            String headImg = claims.get("head_img").toString();
-            String username = claims.get("username").toString();
-            String phone = claims.get("phone").toString();
-            String auth = claims.get("auth").toString();
-            String mail = claims.get("mail").toString();
+            String headImg = (String) claims.get("head_img");
+            String username = (String) claims.get("username");
+            String phone = (String) claims.get("phone");
+            String auth = (String) claims.get("auth");
+            String mail = (String) claims.get("mail");
             LoginUser loginUser = LoginUser.builder()
                     .accountNo(accountNo)
                     .username(username)
@@ -62,6 +59,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             threadLocal.set(loginUser);
             return true;
         }
+        CommonUtil.sendJsonMessage(response,JsonData.buildResult(BizCodeEnum.ACCOUNT_UNLOGIN));
         return false;
     }
 

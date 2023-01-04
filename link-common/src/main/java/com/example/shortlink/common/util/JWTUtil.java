@@ -72,7 +72,7 @@ public class JWTUtil {
     public static Claims checkJWT(String token) {
         try {
             Claims claims = Jwts.parser().setSigningKey(SECRET)
-                    .parseClaimsJwt(token.replace(TOKEN_PREFIX, "")).getBody();
+                    .parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody();
             return claims;
         } catch (Exception e) {
             log.error("jwt 解密失败");
