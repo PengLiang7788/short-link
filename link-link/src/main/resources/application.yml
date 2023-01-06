@@ -109,3 +109,13 @@ spring:
             props:
               worker:
                 id: ${workId}
+      # 配置默认数据库
+      default-data-source-name: ds0
+      # 默认id生成策略
+      default-key-generator:
+        column: id
+        type: SNOWFLAKE
+        props:
+          worker:
+            id: ${workId}
+
