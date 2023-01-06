@@ -10,4 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/domain/v1")
 public class DomainController {
+
+
+
 }
