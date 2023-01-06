@@ -26,6 +26,8 @@ public class LinkApiController {
     private ShortLinkService shortLinkService;
 
     /**
+     * 根据短链码解析出原始网址
+     *
      * 解析301还是302，这边是返回http code是302
      * 为什么用301跳转而不是302跳转
      * 301是永久重定向，302是临时重定向

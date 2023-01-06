@@ -33,7 +33,7 @@ public class MyBatisPlusGenerator {
                 .setServiceName("%sService")
 
                 //实体类结尾名称
-                .setEntityName("%sDO")
+                .setEntityName("%sDo")
 
                 //生成基本的resultMap
                 .setBaseResultMap(true)
@@ -49,7 +49,7 @@ public class MyBatisPlusGenerator {
         // 设置数据库类型
         dsConfig.setDbType(DbType.MYSQL)
                 .setDriverName("com.mysql.cj.jdbc.Driver")
-                .setUrl("jdbc:mysql://212.129.255.88:3306/shortlink_link?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai")
+                .setUrl("jdbc:mysql://212.129.255.88:3306/link_0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai")
                 .setUsername("root")
                 .setPassword("pl1008666.");
 
@@ -68,7 +68,7 @@ public class MyBatisPlusGenerator {
                 .setRestControllerStyle(true)
 
                 // 生成的表, 支持多表一起生成，以数组形式填写
-                .setInclude("link_group","short_link");
+                .setInclude("domain","group_code_mapping_0");
 
         //4. 包名策略配置
         PackageConfig pkConfig = new PackageConfig();

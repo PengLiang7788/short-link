@@ -109,6 +109,3 @@ spring:
             props:
               worker:
                 id: ${workId}
-
-
-
