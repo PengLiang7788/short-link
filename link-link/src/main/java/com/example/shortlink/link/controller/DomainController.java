@@ -6,11 +6,9 @@ import com.example.shortlink.link.vo.DomainVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,5 +33,6 @@ public class DomainController {
         List<DomainVo> list = domainService.listAll();
         return JsonData.buildSuccess(list);
     }
+
 
 }
