@@ -1,5 +1,6 @@
 package com.example.shortlink.link.service;
 
+import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.link.controller.request.ShortLinkAddRequest;
 import com.example.shortlink.link.vo.ShortLinkVo;
@@ -22,5 +23,12 @@ public interface ShortLinkService {
      * @return
      */
     JsonData createShortLink(ShortLinkAddRequest shortLinkAddRequest);
+
+    /**
+     * 处理新增短链消息
+     * @param eventMessage
+     * @return
+     */
+    boolean handlerAddShortLink(EventMessage eventMessage);
 
 }

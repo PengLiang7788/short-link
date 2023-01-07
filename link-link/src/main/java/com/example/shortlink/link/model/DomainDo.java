@@ -13,9 +13,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * <p>
- *
- * </p>
  *
  * @author 彭亮
  * @since 2023-01-06
@@ -35,7 +32,7 @@ public class DomainDo implements Serializable {
     private Long accountNo;
 
     /**
-     * 域名类型，自建custom, 官方 offical
+     * 域名类型，自建custom, 官方 official
      */
     private String domainType;
 

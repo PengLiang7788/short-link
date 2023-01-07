@@ -1,7 +1,5 @@
 package com.example.shortlink.link.listener;
 
-import com.example.shortlink.common.enums.BizCodeEnum;
-import com.example.shortlink.common.exception.BizException;
 import com.example.shortlink.common.model.EventMessage;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
