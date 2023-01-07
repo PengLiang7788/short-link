@@ -13,9 +13,11 @@ import com.example.shortlink.link.component.ShortLinkComponent;
 import com.example.shortlink.link.config.RabbitMQConfig;
 import com.example.shortlink.link.controller.request.ShortLinkAddRequest;
 import com.example.shortlink.link.manager.DomainManager;
+import com.example.shortlink.link.manager.GroupCodeMappingManager;
 import com.example.shortlink.link.manager.LinkGroupManager;
 import com.example.shortlink.link.manager.ShortLinkManager;
 import com.example.shortlink.link.model.DomainDo;
+import com.example.shortlink.link.model.GroupCodeMappingDo;
 import com.example.shortlink.link.model.LinkGroupDO;
 import com.example.shortlink.link.model.ShortLinkDO;
 import com.example.shortlink.link.service.ShortLinkService;
@@ -53,6 +55,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
     @Autowired
     private ShortLinkComponent shortLinkComponent;
+
+    @Autowired
+    private GroupCodeMappingManager groupCodeMappingManager;
 
     /**
      * 解析短链
@@ -127,20 +132,44 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         // 生成短链码
         String shortLinkCode = shortLinkComponent.createShortLinkCode(shortLinkAddRequest.getOriginalUrl());
 
-        ShortLinkDO shortLinkDO = ShortLinkDO.builder().accountNo(accountNo)
-                .code(shortLinkCode)
-                .title(shortLinkAddRequest.getTitle())
-                .originalUrl(shortLinkAddRequest.getOriginalUrl())
-                .domain(domainDo.getValue())
-                .groupId(linkGroupDO.getId())
-                .expired(shortLinkAddRequest.getExpired())
-                .sign(originalUrlDigest)
-                .state(ShortLinkStateEnum.ACTIVE.name())
-                .del(0).build();
+        //TODO 加锁
 
-        shortLinkManager.addShortLink(shortLinkDO);
+        //先判断短链码是否被占用
+        ShortLinkDO shortLinkCodeDoInDB = shortLinkManager.findByShortLinkCode(shortLinkCode);
+        if (shortLinkCodeDoInDB == null) {
+            // C端处理
+            if (EventMessageType.SHORT_LINK_ADD_LINK.name().equalsIgnoreCase(eventMessageType)) {
+                ShortLinkDO shortLinkDO = ShortLinkDO.builder().accountNo(accountNo)
+                        .code(shortLinkCode)
+                        .title(shortLinkAddRequest.getTitle())
+                        .originalUrl(shortLinkAddRequest.getOriginalUrl())
+                        .domain(domainDo.getValue())
+                        .groupId(linkGroupDO.getId())
+                        .expired(shortLinkAddRequest.getExpired())
+                        .sign(originalUrlDigest)
+                        .state(ShortLinkStateEnum.ACTIVE.name())
+                        .del(0).build();
 
-        return true;
+                shortLinkManager.addShortLink(shortLinkDO);
+
+                return true;
+            } else if (EventMessageType.SHORT_LINK_ADD_MAPPING.name().equalsIgnoreCase(eventMessageType)) {
+                //B端处理
+                GroupCodeMappingDo groupCodeMappingDo = GroupCodeMappingDo.builder().accountNo(accountNo)
+                        .code(shortLinkCode)
+                        .title(shortLinkAddRequest.getTitle())
+                        .originalUrl(shortLinkAddRequest.getOriginalUrl())
+                        .domain(domainDo.getValue())
+                        .groupId(linkGroupDO.getId())
+                        .expired(shortLinkAddRequest.getExpired())
+                        .sign(originalUrlDigest)
+                        .state(ShortLinkStateEnum.ACTIVE.name())
+                        .del(0).build();
+                groupCodeMappingManager.add(groupCodeMappingDo);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -160,19 +189,20 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         } else {
             domainDo = domainManager.findByDomainTypeAndId(domainId, DomainTypeEnum.OFFICIAL);
         }
-        Assert.notNull(domainDo,"短链域名不合法");
+        Assert.notNull(domainDo, "短链域名不合法");
         return domainDo;
     }
 
     /**
      * 判断组名是否合法
+     *
      * @param groupId
      * @param accountNo
      * @return
      */
-    private LinkGroupDO checkLinkGroup(Long groupId,Long accountNo){
+    private LinkGroupDO checkLinkGroup(Long groupId, Long accountNo) {
         LinkGroupDO linkGroupDO = linkGroupManager.detail(groupId, accountNo);
-        Assert.notNull(linkGroupDO,"短链组名不合法");
+        Assert.notNull(linkGroupDO, "短链组名不合法");
         return linkGroupDO;
     }
 }
