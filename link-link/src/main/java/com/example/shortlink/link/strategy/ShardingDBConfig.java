@@ -14,7 +14,6 @@ public class ShardingDBConfig {
      */
     private static final List<String> dbPrefix = new ArrayList<>();
 
-    private static Random random = new Random();
 
     // 配置启用那些库的前缀
     static {
@@ -28,8 +27,11 @@ public class ShardingDBConfig {
      *
      * @return
      */
-    public static String getRandomDBPrefix() {
-        int index = random.nextInt(dbPrefix.size());
+    public static String getRandomDBPrefix(String code) {
+
+        int hashCode = code.hashCode();
+        int index = Math.abs(hashCode) % dbPrefix.size();
+
         return dbPrefix.get(index);
     }
 
