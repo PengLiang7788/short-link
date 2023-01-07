@@ -1,5 +1,7 @@
 package com.example.shortlink.link.service;
 
+import com.example.shortlink.common.util.JsonData;
+import com.example.shortlink.link.controller.request.ShortLinkAddRequest;
 import com.example.shortlink.link.vo.ShortLinkVo;
 
 /**
@@ -13,4 +15,12 @@ public interface ShortLinkService {
      * @return
      */
     ShortLinkVo parseShortLinkCode(String shortLinkCode);
+
+    /**
+     * 创建短链
+     * @param shortLinkAddRequest
+     * @return
+     */
+    JsonData createShortLink(ShortLinkAddRequest shortLinkAddRequest);
+
 }

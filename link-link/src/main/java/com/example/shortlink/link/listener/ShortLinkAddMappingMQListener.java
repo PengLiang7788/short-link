@@ -34,7 +34,7 @@ public class ShortLinkAddMappingMQListener {
         }
         log.info("消费成功:{}",message);
         //确认消息消费成功
-        channel.basicAck(tag,false);
+//        channel.basicAck(tag,false);
     }
 
 }

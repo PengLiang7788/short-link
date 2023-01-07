@@ -32,7 +32,6 @@ public class RabbitMQConfig {
         return new TopicExchange(shortLinkEventExchange,true,false);
     }
 
-
     /**
      * 新增短链 队列 C端解析
      */
