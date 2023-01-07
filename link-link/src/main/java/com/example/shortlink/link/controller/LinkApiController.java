@@ -27,13 +27,14 @@ public class LinkApiController {
 
     /**
      * 根据短链码解析出原始网址
-     *
+     * <p>
      * 解析301还是302，这边是返回http code是302
      * 为什么用301跳转而不是302跳转
      * 301是永久重定向，302是临时重定向
      * 短地址已经生成就不会发生变化，所以用301是同时对服务器压力也会有一定减少
      * 但是如果使用301就无法统计到短地址呗点击的次数
      * 所以选择302虽然回增加服务器压力，但是有很多数据可以获取进行解析
+     *
      * @param shortLinkCode
      * @param request
      * @param response
@@ -49,7 +50,9 @@ public class LinkApiController {
                 ShortLinkVo shortLinkVo = shortLinkService.parseShortLinkCode(shortLinkCode);
                 // 判断是否过期和可用
                 if (isVisitable(shortLinkVo)) {
-                    response.setHeader("Location", shortLinkVo.getOriginalUrl());
+                    String originalUrl = CommonUtil.removeUrlPrefix(shortLinkVo.getOriginalUrl());
+
+                    response.setHeader("Location", originalUrl);
                     // 302跳转
                     response.setStatus(HttpStatus.FOUND.value());
                 } else {

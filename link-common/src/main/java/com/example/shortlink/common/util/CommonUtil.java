@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.util.*;
+
 /**
  * @author 彭亮
  * @create 2022-12-21 13:30
@@ -183,12 +184,53 @@ public class CommonUtil {
 
     /**
      * murmurhash算法
+     *
      * @param param
      * @return
      */
-    public static long murmurHash32(String param){
+    public static long murmurHash32(String param) {
         long murmurHash32 = Hashing.murmur3_32().hashUnencodedChars(param).padToLong();
         return murmurHash32;
     }
+
+    /**
+     * URL增加前缀
+     *
+     * @param url
+     * @return
+     */
+    public static String addUrlPrefix(String url) {
+
+        return IDUtil.generateSnowFlakeID() + "&" + url;
+    }
+
+    /**
+     * 移除URL前缀
+     *
+     * @param url
+     * @return
+     */
+    public static String removeUrlPrefix(String url) {
+        String originalUrl = url.substring(url.indexOf("&") + 1);
+        return originalUrl;
+    }
+
+    /**
+     * 如果短链码重复，则调用这个方法
+     * url前缀的编号递增1
+     * 如果还是用雪花算法，容易导致C端和B端不一致，所以采用编号递增1的方式
+     *
+     * @param url
+     * @return
+     */
+    public static String addUrlPrefixVersion(String url) {
+        String version = url.substring(0, url.indexOf("&"));
+        //获取原始地址
+        String originalUrl = url.substring(url.indexOf("&") + 1);
+        long newVersion = Long.parseLong(version) + 1;
+        String newUrl = newVersion + "&" + originalUrl;
+        return newUrl;
+    }
+
 
 }
