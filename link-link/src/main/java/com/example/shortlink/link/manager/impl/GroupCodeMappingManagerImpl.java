@@ -43,7 +43,8 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
         GroupCodeMappingDo groupCodeMappingDo = groupCodeMappingMapper.selectOne(new LambdaQueryWrapper<GroupCodeMappingDo>()
                 .eq(GroupCodeMappingDo::getId, mappingId)
                 .eq(GroupCodeMappingDo::getAccountNo, accountNo)
-                .eq(GroupCodeMappingDo::getGroupId, groupId));
+                .eq(GroupCodeMappingDo::getGroupId, groupId)
+                .eq(GroupCodeMappingDo::getDel, 0));
         return groupCodeMappingDo;
     }
 
@@ -91,7 +92,8 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
         Page<GroupCodeMappingDo> groupCodeMappingDoPage = groupCodeMappingMapper
                 .selectPage(pageInfo, new LambdaQueryWrapper<GroupCodeMappingDo>()
                         .eq(GroupCodeMappingDo::getAccountNo, accountNo)
-                        .eq(GroupCodeMappingDo::getGroupId, groupId));
+                        .eq(GroupCodeMappingDo::getGroupId, groupId)
+                        .eq(GroupCodeMappingDo::getDel, 0));
 
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("total_record", groupCodeMappingDoPage.getTotal());
@@ -121,12 +123,14 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
                 .eq(GroupCodeMappingDo::getCode, shortLinkCode)
                 .eq(GroupCodeMappingDo::getAccountNo, accountNo)
                 .eq(GroupCodeMappingDo::getGroupId, groupId)
+                .eq(GroupCodeMappingDo::getDel, 0)
                 .set(GroupCodeMappingDo::getState, shortLinkStateEnum.name()));
         return rows;
     }
 
     /**
      * 查找是否存在
+     *
      * @param shortLinkCode
      * @param groupId
      * @param accountNo
@@ -136,7 +140,8 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
     public GroupCodeMappingDo findByCodeAndGroupId(String shortLinkCode, Long groupId, Long accountNo) {
         GroupCodeMappingDo groupCodeMappingDo = groupCodeMappingMapper.selectOne(new LambdaQueryWrapper<GroupCodeMappingDo>().eq(GroupCodeMappingDo::getCode, shortLinkCode)
                 .eq(GroupCodeMappingDo::getGroupId, groupId)
-                .eq(GroupCodeMappingDo::getAccountNo, accountNo));
+                .eq(GroupCodeMappingDo::getAccountNo, accountNo)
+                .eq(GroupCodeMappingDo::getDel, 0));
         return groupCodeMappingDo;
     }
 }

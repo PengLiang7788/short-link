@@ -12,6 +12,7 @@ import com.example.shortlink.common.util.JsonUtil;
 import com.example.shortlink.link.component.ShortLinkComponent;
 import com.example.shortlink.link.config.RabbitMQConfig;
 import com.example.shortlink.link.controller.request.ShortLinkAddRequest;
+import com.example.shortlink.link.controller.request.ShortLinkPageRequest;
 import com.example.shortlink.link.manager.DomainManager;
 import com.example.shortlink.link.manager.GroupCodeMappingManager;
 import com.example.shortlink.link.manager.LinkGroupManager;
@@ -23,6 +24,7 @@ import com.example.shortlink.link.model.ShortLinkDO;
 import com.example.shortlink.link.service.ShortLinkService;
 import com.example.shortlink.link.vo.ShortLinkVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.security.auth.Login;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
@@ -211,6 +214,20 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             handlerAddShortLink(eventMessage);
         }
         return false;
+    }
+
+    /**
+     * 从B端查找 group_code_mapping
+     * @param request
+     * @return
+     */
+    @Override
+    public Map<String, Object> pageByGroupId(ShortLinkPageRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        Map<String, Object> result = groupCodeMappingManager
+                .pageShortLinkByGroupId(request.getPage(), request.getSize(), accountNo, request.getGroupId());
+
+        return result;
     }
 
     /**

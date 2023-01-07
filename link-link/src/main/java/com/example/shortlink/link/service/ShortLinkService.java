@@ -3,7 +3,10 @@ package com.example.shortlink.link.service;
 import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.link.controller.request.ShortLinkAddRequest;
+import com.example.shortlink.link.controller.request.ShortLinkPageRequest;
 import com.example.shortlink.link.vo.ShortLinkVo;
+
+import java.util.Map;
 
 /**
  * @author 彭亮
@@ -31,4 +34,10 @@ public interface ShortLinkService {
      */
     boolean handlerAddShortLink(EventMessage eventMessage);
 
+    /**
+     * 分页查找短链
+     * @param request
+     * @return
+     */
+    Map<String, Object> pageByGroupId(ShortLinkPageRequest request);
 }
