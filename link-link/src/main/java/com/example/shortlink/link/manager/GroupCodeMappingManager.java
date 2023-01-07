@@ -60,4 +60,13 @@ public interface GroupCodeMappingManager {
      * @return
      */
     int updateGroupCodeMappingState(Long accountNo, Long groupId, String shortLinkCode, ShortLinkStateEnum shortLinkStateEnum);
+
+    /**
+     * 查找B端短链是否存在
+     * @param shortLinkCode
+     * @param groupId
+     * @param accountNo
+     * @return
+     */
+    GroupCodeMappingDo findByCodeAndGroupId(String shortLinkCode, Long groupId, Long accountNo);
 }

@@ -26,8 +26,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import java.util.Arrays;
+
 
 
 /**
@@ -37,6 +42,9 @@ import org.springframework.util.Assert;
 @Service
 @Slf4j
 public class ShortLinkServiceImpl implements ShortLinkService {
+
+    @Autowired
+    private RedisTemplate<Object,Object> redisTemplate;
 
     @Autowired
     private ShortLinkManager shortLinkManager;
@@ -135,13 +143,21 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         // 生成短链码
         String shortLinkCode = shortLinkComponent.createShortLinkCode(shortLinkAddRequest.getOriginalUrl());
 
-        //TODO 加锁
+        // 加锁
+        String script = "if redis.call('EXISTS',KEYS[1])==0 then redis.call('set',KEYS[1],ARGV[1]); redis.call('expire',KEYS[1],ARGV[2]); return 1;" +
+                " elseif redis.call('get',KEYS[1]) == ARGV[1] then return 2;" +
+                " else return 0; end;";
 
-        //先判断短链码是否被占用
-        ShortLinkDO shortLinkCodeDoInDB = shortLinkManager.findByShortLinkCode(shortLinkCode);
-        if (shortLinkCodeDoInDB == null) {
+        Long result = redisTemplate.execute(new
+                DefaultRedisScript<>(script, Long.class), Arrays.asList(shortLinkCode), accountNo, 100);
+
+
             // C端处理
             if (EventMessageType.SHORT_LINK_ADD_LINK.name().equalsIgnoreCase(eventMessageType)) {
+
+                //先判断短链码是否被占用
+                ShortLinkDO shortLinkCodeDoInDB = shortLinkManager.findByShortLinkCode(shortLinkCode);
+
                 ShortLinkDO shortLinkDO = ShortLinkDO.builder().accountNo(accountNo)
                         .code(shortLinkCode)
                         .title(shortLinkAddRequest.getTitle())
@@ -157,6 +173,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
                 return true;
             } else if (EventMessageType.SHORT_LINK_ADD_MAPPING.name().equalsIgnoreCase(eventMessageType)) {
+
+                GroupCodeMappingDo groupCodeMappingDoInDB =groupCodeMappingManager.findByCodeAndGroupId(shortLinkCode,linkGroupDO.getId(),accountNo);
+
                 //B端处理
                 GroupCodeMappingDo groupCodeMappingDo = GroupCodeMappingDo.builder().accountNo(accountNo)
                         .code(shortLinkCode)
@@ -171,7 +190,6 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 groupCodeMappingManager.add(groupCodeMappingDo);
                 return true;
             }
-        }
         return false;
     }
 

@@ -124,4 +124,19 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
                 .set(GroupCodeMappingDo::getState, shortLinkStateEnum.name()));
         return rows;
     }
+
+    /**
+     * 查找是否存在
+     * @param shortLinkCode
+     * @param groupId
+     * @param accountNo
+     * @return
+     */
+    @Override
+    public GroupCodeMappingDo findByCodeAndGroupId(String shortLinkCode, Long groupId, Long accountNo) {
+        GroupCodeMappingDo groupCodeMappingDo = groupCodeMappingMapper.selectOne(new LambdaQueryWrapper<GroupCodeMappingDo>().eq(GroupCodeMappingDo::getCode, shortLinkCode)
+                .eq(GroupCodeMappingDo::getGroupId, groupId)
+                .eq(GroupCodeMappingDo::getAccountNo, accountNo));
+        return groupCodeMappingDo;
+    }
 }
