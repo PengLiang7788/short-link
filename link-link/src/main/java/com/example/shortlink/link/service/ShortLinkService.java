@@ -37,7 +37,17 @@ public interface ShortLinkService {
      * @param eventMessage
      * @return
      */
-    boolean handlerAddShortLink(EventMessage eventMessage);
+    boolean handleAddShortLink(EventMessage eventMessage);
+
+    /**
+     * 处理更新短链消息
+     *
+     * @param eventMessage
+     * @return
+     */
+    boolean handleUpdateShortLink(EventMessage eventMessage);
+
+
 
     /**
      * 分页查找短链

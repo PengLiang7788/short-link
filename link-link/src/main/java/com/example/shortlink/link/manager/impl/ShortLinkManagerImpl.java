@@ -1,6 +1,7 @@
 package com.example.shortlink.link.manager.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.shortlink.link.manager.ShortLinkManager;
 import com.example.shortlink.link.mapper.ShortLinkMapper;
 import com.example.shortlink.link.model.ShortLinkDO;
@@ -59,6 +60,21 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
                 .eq(ShortLinkDO::getCode, shortLinkCode)
                 .eq(ShortLinkDO::getAccountNo, accountNo));
 
+        return rows;
+    }
+
+    /**
+     * C端更新短链
+     * @param shortLinkDO
+     * @return
+     */
+    @Override
+    public int update(ShortLinkDO shortLinkDO) {
+        int rows = shortLinkMapper.update(null, new LambdaUpdateWrapper<ShortLinkDO>()
+                .eq(ShortLinkDO::getCode, shortLinkDO.getCode())
+                .eq(ShortLinkDO::getDel, 0)
+                .set(ShortLinkDO::getTitle, shortLinkDO.getTitle())
+                .set(ShortLinkDO::getDomain, shortLinkDO.getDomain()));
         return rows;
     }
 }

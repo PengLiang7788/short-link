@@ -144,4 +144,22 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
                 .eq(GroupCodeMappingDo::getDel, 0));
         return groupCodeMappingDo;
     }
+
+    /**
+     * B端更新短链
+     *
+     * @param groupCodeMappingDo
+     * @return
+     */
+    @Override
+    public int update(GroupCodeMappingDo groupCodeMappingDo) {
+        int rows = groupCodeMappingMapper.update(null, new LambdaUpdateWrapper<GroupCodeMappingDo>()
+                .eq(GroupCodeMappingDo::getId, groupCodeMappingDo.getId())
+                .eq(GroupCodeMappingDo::getGroupId, groupCodeMappingDo.getGroupId())
+                .eq(GroupCodeMappingDo::getAccountNo, groupCodeMappingDo.getAccountNo())
+                .eq(GroupCodeMappingDo::getDel, 0)
+                .set(GroupCodeMappingDo::getTitle, groupCodeMappingDo.getTitle())
+                .set(GroupCodeMappingDo::getDomain, groupCodeMappingDo.getDomain()));
+        return rows;
+    }
 }

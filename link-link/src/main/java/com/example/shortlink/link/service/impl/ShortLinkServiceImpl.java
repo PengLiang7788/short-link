@@ -26,7 +26,6 @@ import com.example.shortlink.link.model.ShortLinkDO;
 import com.example.shortlink.link.service.ShortLinkService;
 import com.example.shortlink.link.vo.ShortLinkVo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.security.auth.Login;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,7 +130,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
      * @return
      */
     @Override
-    public boolean handlerAddShortLink(EventMessage eventMessage) {
+    public boolean handleAddShortLink(EventMessage eventMessage) {
 
         Long accountNo = eventMessage.getAccountNo();
         String eventMessageType = eventMessage.getEventMessageType();
@@ -213,13 +212,49 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
             eventMessage.setContent(JsonUtil.obj2Json(shortLinkAddRequest));
             log.warn("短链码保存失败,重新生成:{}", eventMessage);
-            handlerAddShortLink(eventMessage);
+            handleAddShortLink(eventMessage);
         }
         return false;
     }
 
     /**
+     * 处理更新短链消息
+     *
+     * @param eventMessage
+     * @return
+     */
+    @Override
+    public boolean handleUpdateShortLink(EventMessage eventMessage) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        String messageType = eventMessage.getEventMessageType();
+        ShortLinkUpdateRequest request = JsonUtil.json2Obj(eventMessage.getContent(), ShortLinkUpdateRequest.class);
+        // 校验短链域名是否合法
+        DomainDo domainDo = checkDomain(request.getDomainType(), request.getDomainId(), accountNo);
+
+        if (EventMessageType.SHORT_LINK_UPDATE_LINK.name().equalsIgnoreCase(messageType)) {
+            // C端更新
+            ShortLinkDO shortLinkDO = ShortLinkDO.builder().code(request.getCode()).title(request.getTitle())
+                    .domain(domainDo.getValue()).build();
+            int rows = shortLinkManager.update(shortLinkDO);
+            log.debug("更新C端短链，rows={}", rows);
+            return true;
+        } else if (EventMessageType.SHORT_LINK_UPDATE_MAPPING.name().equalsIgnoreCase(messageType)) {
+            // B端更新
+            GroupCodeMappingDo groupCodeMappingDo = GroupCodeMappingDo.builder().id(request.getMappingId())
+                    .accountNo(accountNo).groupId(request.getGroupId())
+                    .title(request.getTitle()).domain(domainDo.getValue()).build();
+
+            int rows = groupCodeMappingManager.update(groupCodeMappingDo);
+            log.debug("更新B端短链，rows={}", rows);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * 从B端查找 group_code_mapping
+     *
      * @param request
      * @return
      */
@@ -234,6 +269,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
     /**
      * 删除短链
+     *
      * @param delRequest
      * @return
      */
@@ -256,6 +292,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
     /**
      * 更新短链
+     *
      * @param request
      * @return
      */
