@@ -53,7 +53,8 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
     public int del(ShortLinkDO shortLinkDO) {
         int rows = shortLinkMapper.update(null, new LambdaUpdateWrapper<ShortLinkDO>()
                 .eq(ShortLinkDO::getCode, shortLinkDO.getCode())
-                .set(ShortLinkDO::getDel, 0));
+                .eq(ShortLinkDO::getAccountNo, shortLinkDO.getAccountNo())
+                .set(ShortLinkDO::getDel, 1));
 
         return rows;
     }
@@ -69,6 +70,7 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
         int rows = shortLinkMapper.update(null, new LambdaUpdateWrapper<ShortLinkDO>()
                 .eq(ShortLinkDO::getCode, shortLinkDO.getCode())
                 .eq(ShortLinkDO::getDel, 0)
+                .eq(ShortLinkDO::getAccountNo, shortLinkDO.getAccountNo())
                 .set(ShortLinkDO::getTitle, shortLinkDO.getTitle())
                 .set(ShortLinkDO::getDomain, shortLinkDO.getDomain()));
         return rows;

@@ -234,7 +234,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         if (EventMessageType.SHORT_LINK_UPDATE_LINK.name().equalsIgnoreCase(messageType)) {
             // C端更新
             ShortLinkDO shortLinkDO = ShortLinkDO.builder().code(request.getCode()).title(request.getTitle())
-                    .domain(domainDo.getValue()).build();
+                    .accountNo(accountNo).domain(domainDo.getValue()).build();
             int rows = shortLinkManager.update(shortLinkDO);
             log.debug("更新C端短链，rows={}", rows);
             return true;
@@ -267,7 +267,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
         if (EventMessageType.SHORT_LINK_DEL_LINK.name().equalsIgnoreCase(eventMessageType)) {
             // C端删除
-            ShortLinkDO shortLinkDO = ShortLinkDO.builder().code(request.getCode()).build();
+            ShortLinkDO shortLinkDO = ShortLinkDO.builder().code(request.getCode()).accountNo(accountNo).build();
             int rows = shortLinkManager.del(shortLinkDO);
             log.debug("删除C端短链，rows={}", rows);
             return true;

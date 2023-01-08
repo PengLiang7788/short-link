@@ -32,8 +32,8 @@ public class ShortLinkDelLinkMQListener {
         log.info("监听到 ShortLinkDelLinkMQListener message消息内容:{}",message);
         try{
             eventMessage.setEventMessageType(EventMessageType.SHORT_LINK_DEL_LINK.name());
-
-            //TODO 业务
+            // 业务
+            shortLinkService.handleDelShortLink(eventMessage);
 
         }catch (Exception e){
             //处理业务异常，还有进行其他操作，比如记录失败原因
