@@ -10,6 +10,7 @@ public interface ShortLinkManager {
 
     /**
      * 新增
+     *
      * @param shortLinkDO
      * @return
      */
@@ -17,6 +18,7 @@ public interface ShortLinkManager {
 
     /**
      * 根据短链码查找
+     *
      * @param shortLinkCode
      * @return
      */
@@ -24,14 +26,14 @@ public interface ShortLinkManager {
 
     /**
      * 删除短链
-     * @param shortLinkCode
-     * @param accountNo
+     *
      * @return
      */
-    int del(String shortLinkCode,Long accountNo);
+    int del(ShortLinkDO shortLinkDO);
 
     /**
      * 更新短链
+     *
      * @param shortLinkDO
      * @return
      */

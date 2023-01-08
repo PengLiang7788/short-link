@@ -33,12 +33,9 @@ public interface GroupCodeMappingManager {
     /**
      * 根据短链码删除
      *
-     * @param shortLinkCode
-     * @param accountNo
-     * @param groupId
      * @return
      */
-    int del(String shortLinkCode, Long accountNo, Long groupId);
+    int del(GroupCodeMappingDo groupCodeMappingDo);
 
     /**
      * 分页查找
@@ -53,6 +50,7 @@ public interface GroupCodeMappingManager {
 
     /**
      * 更新短链码状态
+     *
      * @param accountNo
      * @param groupId
      * @param shortLinkCode
@@ -63,6 +61,7 @@ public interface GroupCodeMappingManager {
 
     /**
      * 查找B端短链是否存在
+     *
      * @param shortLinkCode
      * @param groupId
      * @param accountNo
@@ -72,6 +71,7 @@ public interface GroupCodeMappingManager {
 
     /**
      * 更新短链
+     *
      * @param groupCodeMappingDo
      * @return
      */

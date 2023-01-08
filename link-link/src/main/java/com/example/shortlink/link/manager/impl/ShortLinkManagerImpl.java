@@ -47,24 +47,20 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
     /**
      * 删除短链
      *
-     * @param shortLinkCode
-     * @param accountNo
      * @return
      */
     @Override
-    public int del(String shortLinkCode, Long accountNo) {
-        ShortLinkDO shortLinkDO = new ShortLinkDO();
-        shortLinkDO.setDel(1);
-
-        int rows = shortLinkMapper.update(shortLinkDO, new LambdaQueryWrapper<ShortLinkDO>()
-                .eq(ShortLinkDO::getCode, shortLinkCode)
-                .eq(ShortLinkDO::getAccountNo, accountNo));
+    public int del(ShortLinkDO shortLinkDO) {
+        int rows = shortLinkMapper.update(null, new LambdaUpdateWrapper<ShortLinkDO>()
+                .eq(ShortLinkDO::getCode, shortLinkDO.getCode())
+                .set(ShortLinkDO::getDel, 0));
 
         return rows;
     }
 
     /**
      * C端更新短链
+     *
      * @param shortLinkDO
      * @return
      */

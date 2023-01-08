@@ -62,17 +62,14 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
     /**
      * 根据短链码删除
      *
-     * @param shortLinkCode
-     * @param accountNo
-     * @param groupId
      * @return
      */
     @Override
-    public int del(String shortLinkCode, Long accountNo, Long groupId) {
+    public int del(GroupCodeMappingDo groupCodeMappingDo) {
         int rows = groupCodeMappingMapper.update(null, new LambdaUpdateWrapper<GroupCodeMappingDo>()
-                .eq(GroupCodeMappingDo::getCode, shortLinkCode)
-                .eq(GroupCodeMappingDo::getAccountNo, accountNo)
-                .eq(GroupCodeMappingDo::getGroupId, groupId)
+                .eq(GroupCodeMappingDo::getAccountNo, groupCodeMappingDo.getAccountNo())
+                .eq(GroupCodeMappingDo::getGroupId, groupCodeMappingDo.getGroupId())
+                .eq(GroupCodeMappingDo::getId, groupCodeMappingDo.getId())
                 .set(GroupCodeMappingDo::getDel, 1));
         return rows;
     }
