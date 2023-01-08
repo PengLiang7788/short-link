@@ -3,7 +3,9 @@ package com.example.shortlink.link.service;
 import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.link.controller.request.ShortLinkAddRequest;
+import com.example.shortlink.link.controller.request.ShortLinkDelRequest;
 import com.example.shortlink.link.controller.request.ShortLinkPageRequest;
+import com.example.shortlink.link.controller.request.ShortLinkUpdateRequest;
 import com.example.shortlink.link.vo.ShortLinkVo;
 
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.Map;
 public interface ShortLinkService {
     /**
      * 解析短链
+     *
      * @param shortLinkCode
      * @return
      */
@@ -22,6 +25,7 @@ public interface ShortLinkService {
 
     /**
      * 创建短链
+     *
      * @param shortLinkAddRequest
      * @return
      */
@@ -29,6 +33,7 @@ public interface ShortLinkService {
 
     /**
      * 处理新增短链消息
+     *
      * @param eventMessage
      * @return
      */
@@ -36,8 +41,24 @@ public interface ShortLinkService {
 
     /**
      * 分页查找短链
+     *
      * @param request
      * @return
      */
     Map<String, Object> pageByGroupId(ShortLinkPageRequest request);
+
+    /**
+     * 删除短链
+     *
+     * @param delRequest
+     * @return
+     */
+    JsonData del(ShortLinkDelRequest delRequest);
+
+    /**
+     * 更新短链
+     * @param request
+     * @return
+     */
+    JsonData update(ShortLinkUpdateRequest request);
 }

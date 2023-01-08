@@ -19,5 +19,35 @@ public enum EventMessageType {
     /**
      * 创建短链 B端
      */
-    SHORT_LINK_ADD_MAPPING;
+    SHORT_LINK_ADD_MAPPING,
+
+    /**
+     * 短链创建
+     */
+    SHORT_LINK_DEL,
+
+    /**
+     * 删除短链 C端
+     */
+    SHORT_LINK_DEL_LINK,
+
+    /**
+     * 删除短链 B端
+     */
+    SHORT_LINK_DEL_MAPPING,
+
+    /**
+     * 更新创建
+     */
+    SHORT_LINK_UPDATE,
+
+    /**
+     * 更新短链 C端
+     */
+    SHORT_LINK_UPDATE_LINK,
+
+    /**
+     * 更新短链 B端
+     */
+    SHORT_LINK_UPDATE_MAPPING;
 }

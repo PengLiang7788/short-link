@@ -12,7 +12,9 @@ import com.example.shortlink.common.util.JsonUtil;
 import com.example.shortlink.link.component.ShortLinkComponent;
 import com.example.shortlink.link.config.RabbitMQConfig;
 import com.example.shortlink.link.controller.request.ShortLinkAddRequest;
+import com.example.shortlink.link.controller.request.ShortLinkDelRequest;
 import com.example.shortlink.link.controller.request.ShortLinkPageRequest;
+import com.example.shortlink.link.controller.request.ShortLinkUpdateRequest;
 import com.example.shortlink.link.manager.DomainManager;
 import com.example.shortlink.link.manager.GroupCodeMappingManager;
 import com.example.shortlink.link.manager.LinkGroupManager;
@@ -228,6 +230,44 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 .pageShortLinkByGroupId(request.getPage(), request.getSize(), accountNo, request.getGroupId());
 
         return result;
+    }
+
+    /**
+     * 删除短链
+     * @param delRequest
+     * @return
+     */
+    @Override
+    public JsonData del(ShortLinkDelRequest delRequest) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+
+        EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
+                .content(JsonUtil.obj2Json(delRequest))
+                .messageId(IDUtil.generateSnowFlakeID().toString())
+                .eventMessageType(EventMessageType.SHORT_LINK_DEL.name())
+                .build();
+        //TODO 发送消息
+
+        return JsonData.buildSuccess();
+    }
+
+    /**
+     * 更新短链
+     * @param request
+     * @return
+     */
+    @Override
+    public JsonData update(ShortLinkUpdateRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+
+        EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
+                .content(JsonUtil.obj2Json(request))
+                .messageId(IDUtil.generateSnowFlakeID().toString())
+                .eventMessageType(EventMessageType.SHORT_LINK_UPDATE.name())
+                .build();
+        //TODO 发送消息
+
+        return JsonData.buildSuccess();
     }
 
     /**

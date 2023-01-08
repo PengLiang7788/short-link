@@ -3,7 +3,9 @@ package com.example.shortlink.link.controller;
 
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.link.controller.request.ShortLinkAddRequest;
+import com.example.shortlink.link.controller.request.ShortLinkDelRequest;
 import com.example.shortlink.link.controller.request.ShortLinkPageRequest;
+import com.example.shortlink.link.controller.request.ShortLinkUpdateRequest;
 import com.example.shortlink.link.service.ShortLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +46,28 @@ public class ShortLinkController {
     public JsonData pageByGroupId(@RequestBody ShortLinkPageRequest request) {
         Map<String , Object> result = shortLinkService.pageByGroupId(request);
         return JsonData.buildSuccess(result);
+    }
+
+    /**
+     * 删除短链
+     * @param delRequest
+     * @return
+     */
+    @PostMapping("/del")
+    public JsonData del(@RequestBody ShortLinkDelRequest delRequest){
+        JsonData jsonData = shortLinkService.del(delRequest);
+        return jsonData;
+    }
+
+    /**
+     * 更新短链
+     * @param request
+     * @return
+     */
+    @PostMapping("/update")
+    public JsonData update(@RequestBody ShortLinkUpdateRequest request){
+        JsonData jsonData = shortLinkService.update(request);
+        return jsonData;
     }
 
 }
