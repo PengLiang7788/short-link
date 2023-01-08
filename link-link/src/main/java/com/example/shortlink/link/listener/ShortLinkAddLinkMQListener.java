@@ -30,7 +30,6 @@ public class ShortLinkAddLinkMQListener {
     @RabbitHandler
     public void shortLinkHandler(EventMessage eventMessage, Message message, Channel channel) throws IOException {
         log.info("监听到ShortLinkAddLinkMQListener message消息内容:{}",message);
-        long tag = message.getMessageProperties().getDeliveryTag();
         try{
             eventMessage.setEventMessageType(EventMessageType.SHORT_LINK_ADD_LINK.name());
             shortLinkService.handleAddShortLink(eventMessage);
@@ -41,8 +40,6 @@ public class ShortLinkAddLinkMQListener {
             throw new BizException(BizCodeEnum.MQ_CONSUME_EXCEPTION);
         }
         log.info("消费成功:{}",message);
-        //确认消息消费成功
-//        channel.basicAck(tag,false);
     }
 
 }
