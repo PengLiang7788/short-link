@@ -268,7 +268,10 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 .messageId(IDUtil.generateSnowFlakeID().toString())
                 .eventMessageType(EventMessageType.SHORT_LINK_UPDATE.name())
                 .build();
-        //TODO 发送消息
+        // 发送消息
+        rabbitTemplate.convertAndSend(
+                rabbitMQConfig.getShortLinkEventExchange()
+                , rabbitMQConfig.getShortLinkUpdateRoutingKey(), eventMessage);
 
         return JsonData.buildSuccess();
     }
