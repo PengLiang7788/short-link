@@ -49,4 +49,11 @@ public interface ProductOrderManager {
      */
     Map<String, Object> page(int page, int size, Long accountNo, String state);
 
+    /**
+     * 删除
+     * @param productOrderId
+     * @param accountNo
+     * @return
+     */
+    int del(Long productOrderId,Long accountNo);
 }

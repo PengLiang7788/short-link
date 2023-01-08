@@ -110,4 +110,20 @@ public class ProductOrderManagerImpl implements ProductOrderManager {
 
         return pageMap;
     }
+
+    /**
+     * 删除
+     *
+     * @param productOrderId
+     * @param accountNo
+     * @return
+     */
+    @Override
+    public int del(Long productOrderId, Long accountNo) {
+        int rows = productOrderMapper.update(null, new LambdaUpdateWrapper<ProductOrderDo>()
+                .eq(ProductOrderDo::getId, productOrderId)
+                .eq(ProductOrderDo::getAccountNo, accountNo)
+                .set(ProductOrderDo::getDel, 1));
+        return rows;
+    }
 }
