@@ -13,6 +13,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,9 @@ public class RepeatSubmitAspect {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     /**
      * 定义pointcut表达式
@@ -74,7 +79,7 @@ public class RepeatSubmitAspect {
         if (type.equalsIgnoreCase(RepeatSubmit.Type.PARAM.name())) {
             //方式一：参数形式防重提交
             // 获取加锁时间
-            long lockTIme = repeatSubmit.lockTime();
+            long lockTime = repeatSubmit.lockTime();
             String ipAddr = CommonUtil.getIpAddr(request);
             // 获取方法签名
             MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
@@ -85,7 +90,10 @@ public class RepeatSubmitAspect {
             String key = String.format("%s-%s-%s-%s", ipAddr, className, method, accountNo);
 
             // 加锁
-            res = redisTemplate.opsForValue().setIfAbsent(key, "1", lockTIme, TimeUnit.SECONDS);
+//            res = redisTemplate.opsForValue().setIfAbsent(key, "1", lockTIme, TimeUnit.SECONDS);
+            RLock lock = redissonClient.getLock(key);
+            // 尝试加锁，最多等待0秒，上锁以后等待5秒自动解锁，lockTime默认为5秒可以自定义
+            res = lock.tryLock(0, lockTime, TimeUnit.SECONDS);
 
         } else {
             //方式二：令牌形式防重提交
@@ -103,7 +111,7 @@ public class RepeatSubmitAspect {
             res = redisTemplate.delete(key);
         }
         if (!res) {
-            throw new BizException(BizCodeEnum.ORDER_CONFIRM_REPEAT);
+            log.error("请求重复提交");
         }
         log.info("环绕通知执行前");
         Object obj = joinPoint.proceed();
