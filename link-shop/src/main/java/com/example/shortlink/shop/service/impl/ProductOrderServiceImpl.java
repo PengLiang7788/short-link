@@ -103,10 +103,10 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         ProductDo productDo = productManager.findDetailById(orderRequest.getProductId());
 
         // 验证价格
-        this.checkPrice(productDo,orderRequest);
+        this.checkPrice(productDo, orderRequest);
 
         // 创建订单
-        ProductOrderDo productOrderDo = this.saveProductOrder(orderRequest,loginUser,orderOutTradeNo,productDo);
+        ProductOrderDo productOrderDo = this.saveProductOrder(orderRequest, loginUser, orderOutTradeNo, productDo);
 
         // 创建支付信息
         PayInfoVo payInfoVo = PayInfoVo.builder().accountNo(loginUser.getAccountNo()).outTradeNo(orderOutTradeNo)
@@ -165,6 +165,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     /**
      * 验证价格
+     *
      * @param productDo
      * @param orderRequest
      */
@@ -174,8 +175,8 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
         // 前端传递总价和后端计算总价格是否一致
         //TODO 优惠券价格进行抵扣
-        if (bizTotal.compareTo(orderRequest.getPayAmount()) != 0){
-            log.error("验证价格失败:{}",orderRequest);
+        if (bizTotal.compareTo(orderRequest.getPayAmount()) != 0) {
+            log.error("验证价格失败:{}", orderRequest);
             throw new BizException(BizCodeEnum.ORDER_CONFIRM_PRICE_FAIL);
         }
     }
