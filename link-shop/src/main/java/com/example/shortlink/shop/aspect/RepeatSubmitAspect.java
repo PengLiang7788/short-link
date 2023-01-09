@@ -87,19 +87,19 @@ public class RepeatSubmitAspect {
             Method method = methodSignature.getMethod();
             // 获取类名
             String className = method.getDeclaringClass().getName();
-            String key = String.format("%s-%s-%s-%s", ipAddr, className, method, accountNo);
+            String key = "order-server:repeat_submit:" + CommonUtil.MD5(String.format("%s-%s-%s-%s", ipAddr, className, method, accountNo));
 
             // 加锁
 //            res = redisTemplate.opsForValue().setIfAbsent(key, "1", lockTIme, TimeUnit.SECONDS);
             RLock lock = redissonClient.getLock(key);
-            // 尝试加锁，最多等待0秒，上锁以后等待5秒自动解锁，lockTime默认为5秒可以自定义
-            res = lock.tryLock(0, lockTime, TimeUnit.SECONDS);
+            // 尝试加锁，最多等待2秒，上锁以后等待5秒自动解锁，lockTime默认为5秒可以自定义
+            res = lock.tryLock(2, lockTime, TimeUnit.SECONDS);
 
         } else {
             //方式二：令牌形式防重提交
             String requestToken = request.getHeader("request-token");
             if (StringUtils.isBlank(requestToken)) {
-                throw new BizException(BizCodeEnum.ORDER_CONFIRM_TOKEN_EQUAL_FAIL);
+                return null;
             }
             String key = String.format(RedisKey.SUBMIT_ORDER_TOKEN_KEY, accountNo, requestToken);
 
@@ -112,6 +112,7 @@ public class RepeatSubmitAspect {
         }
         if (!res) {
             log.error("请求重复提交");
+            throw new BizException(BizCodeEnum.ORDER_CONFIRM_REPEAT);
         }
         log.info("环绕通知执行前");
         Object obj = joinPoint.proceed();
