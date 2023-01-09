@@ -4,6 +4,7 @@ import com.example.shortlink.common.constant.RedisKey;
 import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.exception.BizException;
 import com.example.shortlink.common.interceptor.LoginInterceptor;
+import com.example.shortlink.common.util.CommonUtil;
 import com.example.shortlink.shop.annotation.RepeatSubmit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 定义一个切面类
@@ -68,7 +72,21 @@ public class RepeatSubmitAspect {
         // 防重提交类型
         String type = repeatSubmit.limitType().name();
         if (type.equalsIgnoreCase(RepeatSubmit.Type.PARAM.name())) {
-            //方式一：参数形式防重提交 TODO
+            //方式一：参数形式防重提交
+            // 获取加锁时间
+            long lockTIme = repeatSubmit.lockTime();
+            String ipAddr = CommonUtil.getIpAddr(request);
+            // 获取方法签名
+            MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+            // 获取方法
+            Method method = methodSignature.getMethod();
+            // 获取类名
+            String className = method.getDeclaringClass().getName();
+            String key = String.format("%s-%s-%s-%s", ipAddr, className, method, accountNo);
+
+            // 加锁
+            res = redisTemplate.opsForValue().setIfAbsent(key, "1", lockTIme, TimeUnit.SECONDS);
+
         } else {
             //方式二：令牌形式防重提交
             String requestToken = request.getHeader("request-token");
