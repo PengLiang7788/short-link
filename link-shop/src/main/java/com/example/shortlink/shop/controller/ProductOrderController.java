@@ -8,7 +8,9 @@ import com.example.shortlink.common.enums.ProductOrderPayTypeEnum;
 import com.example.shortlink.common.interceptor.LoginInterceptor;
 import com.example.shortlink.common.util.CommonUtil;
 import com.example.shortlink.common.util.JsonData;
+import com.example.shortlink.shop.annotation.RepeatSubmit;
 import com.example.shortlink.shop.controller.request.ConfirmOrderRequest;
+import com.example.shortlink.shop.controller.request.ProductOrderPageRequest;
 import com.example.shortlink.shop.service.ProductOrderService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,12 +61,12 @@ public class ProductOrderController {
      *
      * @return
      */
-    @GetMapping("/page")
-    public JsonData page(@RequestParam(value = "page", defaultValue = "1") int page,
-                         @RequestParam(value = "size", defaultValue = "10") int size,
-                         @RequestParam(value = "state", required = false) String state) {
+    @PostMapping("/page")
+    @RepeatSubmit(limitType = RepeatSubmit.Type.TOKEN)
+    public JsonData page(@RequestBody ProductOrderPageRequest request) {
 
-        Map<String, Object> pageResult = productOrderService.page(page, size, state);
+        Map<String, Object> pageResult =
+                productOrderService.page(request);
         return JsonData.buildSuccess(pageResult);
     }
 

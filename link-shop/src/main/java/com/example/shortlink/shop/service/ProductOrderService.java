@@ -2,6 +2,7 @@ package com.example.shortlink.shop.service;
 
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.shop.controller.request.ConfirmOrderRequest;
+import com.example.shortlink.shop.controller.request.ProductOrderPageRequest;
 
 import java.util.Map;
 
@@ -12,15 +13,12 @@ import java.util.Map;
 public interface ProductOrderService {
     /**
      * 分页接口
-     * @param page
-     * @param size
-     * @param state
-     * @return
      */
-    Map<String, Object> page(int page, int size, String state);
+    Map<String, Object> page(ProductOrderPageRequest request);
 
     /**
      * 查询订单状态
+     *
      * @param outTradeNo
      * @return
      */
@@ -28,6 +26,7 @@ public interface ProductOrderService {
 
     /**
      * 确认订单
+     *
      * @param orderRequest
      * @return
      */

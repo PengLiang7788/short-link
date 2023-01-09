@@ -12,6 +12,7 @@ import com.example.shortlink.common.util.CommonUtil;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.common.util.JsonUtil;
 import com.example.shortlink.shop.controller.request.ConfirmOrderRequest;
+import com.example.shortlink.shop.controller.request.ProductOrderPageRequest;
 import com.example.shortlink.shop.manager.ProductManager;
 import com.example.shortlink.shop.manager.ProductOrderManager;
 import com.example.shortlink.shop.model.ProductDo;
@@ -44,17 +45,14 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     /**
      * 分页接口
      *
-     * @param page
-     * @param size
-     * @param state
      * @return
      */
     @Override
-    public Map<String, Object> page(int page, int size, String state) {
+    public Map<String, Object> page(ProductOrderPageRequest request) {
 
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
 
-        Map<String, Object> pageResult = productOrderManager.page(page, size, accountNo, state);
+        Map<String, Object> pageResult = productOrderManager.page(request.getPage(), request.getSize(), accountNo, request.getState());
         return pageResult;
     }
 
