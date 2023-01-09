@@ -1,9 +1,11 @@
 package com.example.shortlink.shop.controller;
 
 
+import com.example.shortlink.common.constant.RedisKey;
 import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.enums.CLientTypeEnum;
 import com.example.shortlink.common.enums.ProductOrderPayTypeEnum;
+import com.example.shortlink.common.interceptor.LoginInterceptor;
 import com.example.shortlink.common.util.CommonUtil;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.shop.controller.request.ConfirmOrderRequest;
@@ -12,10 +14,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 彭亮
@@ -28,6 +32,27 @@ public class ProductOrderController {
 
     @Autowired
     private ProductOrderService productOrderService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    /**
+     * 下单前获取令牌，用于防重提交
+     *
+     * @return
+     */
+    @GetMapping("/token")
+    public JsonData getOrderToken() {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+
+        String token = CommonUtil.getStringNumRandom(32);
+        String key = String.format(RedisKey.SUBMIT_ORDER_TOKEN_KEY, accountNo, token);
+
+        //令牌有效时间是三十分钟
+        redisTemplate.opsForValue().set(key, String.valueOf(Thread.currentThread().getId()), 30, TimeUnit.MINUTES);
+
+        return JsonData.buildSuccess(token);
+    }
 
     /**
      * 分页接口
@@ -57,6 +82,7 @@ public class ProductOrderController {
 
     /**
      * 下单接口
+     *
      * @param orderRequest
      * @param response
      */

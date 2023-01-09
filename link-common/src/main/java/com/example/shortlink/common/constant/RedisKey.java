@@ -10,4 +10,9 @@ public class RedisKey {
      */
     public static final String CHECK_CODE_KEY = "code:%s:%s";
 
+    /**
+     * 提交订单令牌混村key
+     */
+    public static final String SUBMIT_ORDER_TOKEN_KEY = "order:submit:%s:%s";
+
 }
