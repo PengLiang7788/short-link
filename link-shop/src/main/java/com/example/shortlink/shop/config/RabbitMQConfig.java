@@ -115,7 +115,4 @@ public class RabbitMQConfig {
         return new Binding(orderCloseQueue, Binding.DestinationType.QUEUE,orderEventExchange,orderCloseRoutingKey,null);
     }
 
-
-
-
 }

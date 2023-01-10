@@ -49,5 +49,10 @@ public enum EventMessageType {
     /**
      * 更新短链 B端
      */
-    SHORT_LINK_UPDATE_MAPPING;
+    SHORT_LINK_UPDATE_MAPPING,
+
+    /**
+     * 新建商品订单
+     */
+    PRODUCT_ORDER_NEW
 }

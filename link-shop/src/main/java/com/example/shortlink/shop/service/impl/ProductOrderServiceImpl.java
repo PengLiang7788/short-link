@@ -1,16 +1,15 @@
 package com.example.shortlink.shop.service.impl;
 
 import com.example.shortlink.common.constant.TImeConstant;
-import com.example.shortlink.common.enums.BillTypeEnum;
-import com.example.shortlink.common.enums.BizCodeEnum;
-import com.example.shortlink.common.enums.ProductOrderPayTypeEnum;
-import com.example.shortlink.common.enums.ProductOrderStateEnum;
+import com.example.shortlink.common.enums.*;
 import com.example.shortlink.common.exception.BizException;
 import com.example.shortlink.common.interceptor.LoginInterceptor;
+import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.model.LoginUser;
 import com.example.shortlink.common.util.CommonUtil;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.common.util.JsonUtil;
+import com.example.shortlink.shop.config.RabbitMQConfig;
 import com.example.shortlink.shop.controller.request.ConfirmOrderRequest;
 import com.example.shortlink.shop.controller.request.ProductOrderPageRequest;
 import com.example.shortlink.shop.manager.ProductManager;
@@ -20,6 +19,7 @@ import com.example.shortlink.shop.model.ProductOrderDo;
 import com.example.shortlink.shop.service.ProductOrderService;
 import com.example.shortlink.shop.vo.PayInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +41,12 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Autowired
     private ProductManager productManager;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private RabbitMQConfig rabbitMQConfig;
 
     /**
      * 分页接口
@@ -113,11 +119,15 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 .payFee(orderRequest.getPayAmount())
                 .orderPayTimeOut(TImeConstant.ORDER_PAY_TIMEOUT_MILLS).build();
 
-        // 发送延迟消息 TODO
+        // 发送延迟消息
+        EventMessage eventMessage = EventMessage.builder().eventMessageType(EventMessageType.PRODUCT_ORDER_NEW.name())
+                .accountNo(loginUser.getAccountNo())
+                .bizId(orderOutTradeNo).build();
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),rabbitMQConfig.getOrderCloseDelayRoutingKey(),eventMessage);
 
         // 对接支付信息 TODO
 
-        return null;
+        return JsonData.buildSuccess();
     }
 
 
