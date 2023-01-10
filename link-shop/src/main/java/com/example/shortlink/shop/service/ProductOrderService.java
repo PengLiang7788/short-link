@@ -1,5 +1,6 @@
 package com.example.shortlink.shop.service;
 
+import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.shop.controller.request.ConfirmOrderRequest;
 import com.example.shortlink.shop.controller.request.ProductOrderPageRequest;
@@ -31,4 +32,10 @@ public interface ProductOrderService {
      * @return
      */
     JsonData confirmOrder(ConfirmOrderRequest orderRequest);
+
+    /**
+     * 关闭订单
+     * @param eventMessage
+     */
+    boolean closeProductOrder(EventMessage eventMessage);
 }

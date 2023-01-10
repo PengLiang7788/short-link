@@ -19,6 +19,7 @@ import com.example.shortlink.shop.model.ProductOrderDo;
 import com.example.shortlink.shop.service.ProductOrderService;
 import com.example.shortlink.shop.vo.PayInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -123,11 +124,67 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         EventMessage eventMessage = EventMessage.builder().eventMessageType(EventMessageType.PRODUCT_ORDER_NEW.name())
                 .accountNo(loginUser.getAccountNo())
                 .bizId(orderOutTradeNo).build();
-        rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),rabbitMQConfig.getOrderCloseDelayRoutingKey(),eventMessage);
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(), rabbitMQConfig.getOrderCloseDelayRoutingKey(), eventMessage);
 
         // 对接支付信息 TODO
 
         return JsonData.buildSuccess();
+    }
+
+    /**
+     * 关闭订单
+     * 延迟消息的时间需要比订单过期的时间长一点，这样就不存在查询的时候用户还能支付成功
+     * 查询订单是否存在，如果已经支付则正常结束
+     * 如果订单未支付，主动调用第三方支付平台查询订单状态
+     * 确认未支付，本地取消订单
+     * 如果第三方平台已经支付，主动的把订单状态改成已支付，造成该原因的情况可能是支付通道回调有问题，然后触发支付后的动作。
+     * 触发方式：RPC or MQ？
+     * @param eventMessage
+     * @return
+     */
+    @Override
+    public boolean closeProductOrder(EventMessage eventMessage) {
+        String outTradeNo = eventMessage.getBizId();
+        Long accountNo = eventMessage.getAccountNo();
+
+        ProductOrderDo productOrderDo = productOrderManager.findByOutTradeNoAndAccountNo(outTradeNo, accountNo);
+        if (productOrderDo == null){
+            // 订单不存在
+            log.warn("订单不存在");
+            return true;
+        }
+
+        if (productOrderDo.getState().equalsIgnoreCase(ProductOrderStateEnum.PAY.name())){
+            // 已经支付
+            log.info("直接确认消息，订单已经支付:{}",eventMessage);
+            return true;
+        }
+
+        if (productOrderDo.getState().equalsIgnoreCase(ProductOrderStateEnum.NEW.name())){
+            // 未支付，需要向第三方支付平台进行查询状态
+            PayInfoVo payInfoVo = new PayInfoVo();
+            payInfoVo.setPayType(productOrderDo.getPayType());
+            payInfoVo.setOutTradeNo(outTradeNo);
+            payInfoVo.setAccountNo(accountNo);
+
+            //TODO 向第三方支付平台查询订单状态
+            String payResult = "";
+            if (StringUtils.isBlank(payResult)){
+                // 如果为空 则未支付成功 本地取消订单
+                productOrderManager.updateOrderPayState(outTradeNo,accountNo,
+                        ProductOrderStateEnum.CANCEL.name(),ProductOrderStateEnum.NEW.name());
+                log.info("未支付成功，本地取消订单:{}",eventMessage);
+            }else {
+                // 支付成功 主动把订单状态更新成支付成功
+                log.warn("支付成功，但是微信回调通知失败，需要排查问题:{}",eventMessage);
+                productOrderManager.updateOrderPayState(outTradeNo,accountNo,
+                        ProductOrderStateEnum.PAY.name(),ProductOrderStateEnum.NEW.name());
+                //TODO 触发支付成功后的逻辑
+
+            }
+        }
+
+        return true;
     }
 
 

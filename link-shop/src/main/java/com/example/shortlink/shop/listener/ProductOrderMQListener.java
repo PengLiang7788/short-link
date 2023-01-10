@@ -30,7 +30,8 @@ public class ProductOrderMQListener {
         log.info("监听到消息 ProductOrderMQListener message的消息内容:{}",message);
         try{
 
-            //TODO
+            //关闭订单
+            productOrderService.closeProductOrder(eventMessage);
 
         }catch (Exception e){
             log.error("消费失败:{}",eventMessage);
