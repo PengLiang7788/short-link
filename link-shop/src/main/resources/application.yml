@@ -83,3 +83,17 @@ spring:
           max-attempts: 4
           # 重试消息的时间间隔 5秒
           initial-interval: 5000
+
+# 微信支付
+pay:
+  wechat:
+    mch-id: 1558950191
+    wx-pay-appid: wx74862e0dfcf69954
+    mch-serial-no: 34345964330B66427E0D3D28826C4993C77E631F
+    api-v3-key: UDuLFDcmy5Eb6o0nTNZdu6ek4DDh4K8B
+    # 自定义
+    private-key-path: classpath:/cert/apiclient_key.pem
+    success-return-url: https://www.nit.edu.cn
+    callback-url: https://7d92-115-171-63-135.ngrok.io
+
+
