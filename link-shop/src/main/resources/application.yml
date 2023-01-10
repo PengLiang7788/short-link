@@ -96,4 +96,3 @@ pay:
     success-return-url: https://www.nit.edu.cn
     callback-url: http://api.open1024.com/shop-server/api/callback/order/v1/wechat
 
-
