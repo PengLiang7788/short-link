@@ -7,6 +7,7 @@ import com.example.shortlink.shop.config.WechatPayApi;
 import com.example.shortlink.shop.config.WechatPayConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -101,6 +102,65 @@ public class WechatPayTest {
             e.printStackTrace();
         }
 
+
+    }
+
+
+    @Test
+    public void testNativeQuery() {
+        String outTradeNo = "jVDdIa5yPV6lmwe1VJjMaiOmoFRRbwm1";
+
+        String url = String.format(WechatPayApi.NATIVE_QUERY, outTradeNo, payConfig.getMchId());
+
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Accept","application/json");
+
+        try (CloseableHttpResponse response = wechatPayClient.execute(httpGet)) {
+
+            //响应码
+            int statusCode = response.getStatusLine().getStatusCode();
+            //响应体
+            String responseStr = EntityUtils.toString(response.getEntity());
+
+            log.info("查询响应码:{},响应体:{}", statusCode, responseStr);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    @Test
+    public void testNativeCloseOrder() {
+        String outTradeNo = "jVDdIa5yPV6lmwe1VJjMaiOmoFRRbwm1";
+
+        JSONObject payObj = new JSONObject();
+        payObj.put("mchid",payConfig.getMchId());
+        String body = payObj.toJSONString();
+
+        log.info("请求参数:{}", body);
+
+        StringEntity entity = new StringEntity(body, "utf-8");
+        entity.setContentType("application/json");
+
+        String url = String.format(WechatPayApi.NATIVE_CLOSE_ORDER, outTradeNo);
+
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setEntity(entity);
+
+        try (CloseableHttpResponse response = wechatPayClient.execute(httpPost)) {
+
+            //响应码
+            int statusCode = response.getStatusLine().getStatusCode();
+
+            log.info("关闭订单响应码:{}", statusCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
