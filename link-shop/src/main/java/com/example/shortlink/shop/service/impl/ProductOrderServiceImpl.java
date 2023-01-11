@@ -9,6 +9,7 @@ import com.example.shortlink.common.model.LoginUser;
 import com.example.shortlink.common.util.CommonUtil;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.common.util.JsonUtil;
+import com.example.shortlink.shop.component.PayFactory;
 import com.example.shortlink.shop.config.RabbitMQConfig;
 import com.example.shortlink.shop.controller.request.ConfirmOrderRequest;
 import com.example.shortlink.shop.controller.request.ProductOrderPageRequest;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -36,6 +38,9 @@ import java.util.Map;
 @Service
 @Slf4j
 public class ProductOrderServiceImpl implements ProductOrderService {
+
+    @Autowired
+    private PayFactory payFactory;
 
     @Autowired
     private ProductOrderManager productOrderManager;
@@ -126,9 +131,16 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 .bizId(orderOutTradeNo).build();
         rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(), rabbitMQConfig.getOrderCloseDelayRoutingKey(), eventMessage);
 
-        // 对接支付信息 TODO
+        // 对接支付信息
+        String codeUrl = payFactory.pay(payInfoVo);
+        if (StringUtils.isNotBlank(codeUrl)){
+            Map<String ,String> resultMap = new HashMap<>();
+            resultMap.put("code_url",codeUrl);
+            resultMap.put("out_trade_no", payInfoVo.getOutTradeNo());
+            return JsonData.buildSuccess(resultMap);
+        }
 
-        return JsonData.buildSuccess();
+        return JsonData.buildResult(BizCodeEnum.PAY_ORDER_FAIL);
     }
 
     /**
