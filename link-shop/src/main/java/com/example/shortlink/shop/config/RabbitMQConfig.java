@@ -75,7 +75,7 @@ public class RabbitMQConfig {
     }
 
     /**
-     * 延迟队列 需要配置他的死信队列
+     * 延迟队列
      *
      * @return
      */
