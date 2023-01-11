@@ -1,8 +1,10 @@
 package com.example.shortlink.shop.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.example.shortlink.shop.config.WechatPayConfig;
 import com.example.shortlink.shop.service.ProductOrderService;
 import com.wechat.pay.contrib.apache.httpclient.auth.ScheduledUpdateCertificatesVerifier;
+import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,19 +76,64 @@ public class PayCallbackController {
         try {
             boolean result = verifiedSign(serialNo, signStr, signature);
 
-            //TODO 解密数据
+            if (result) {
+                // 解密数据
+                String plainBody = decryptBody(body);
+                log.info("解密后的明文:{}", plainBody);
 
-            //TODO 处理业务逻辑
+                Map<String, String> paramsMap = convertWechatPayMsgToMap(plainBody);
+                //TODO 处理业务逻辑
 
-            // 响应微信
-            map.put("code", "SUCCESS");
-            map.put("message", "成功");
+                // 响应微信
+                map.put("code", "SUCCESS");
+                map.put("message", "成功");
+            }
 
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             log.error("微信支付回调异常:{}", e);
         }
         return map;
     }
+
+    /**
+     * 转换body为map
+     *
+     * @param plainBody
+     * @return
+     */
+    private Map<String, String> convertWechatPayMsgToMap(String plainBody) {
+        Map<String, String> paramsMap = new HashMap<>();
+        JSONObject jsonObject = JSONObject.parseObject(plainBody);
+        // 商户订单号
+        paramsMap.put("out_trade_no", jsonObject.getString("out_trade_no"));
+        // 交易状态
+        paramsMap.put("trade_state", jsonObject.getString("trade_state"));
+        // 附加数据
+        paramsMap.put("account_no", jsonObject.getJSONObject("attach").getString("accountNo"));
+
+        return paramsMap;
+
+    }
+
+    /**
+     * 解密body的密文
+     *
+     * @param body
+     * @return
+     */
+    private String decryptBody(String body) throws UnsupportedEncodingException, GeneralSecurityException {
+        AesUtil aesUtil = new AesUtil(wechatPayConfig.getApiV3Key().getBytes("utf-8"));
+
+        JSONObject object = JSONObject.parseObject(body);
+        JSONObject resource = object.getJSONObject("resource");
+
+        String ciphertext = resource.getString("ciphertext");
+        String nonce = resource.getString("nonce");
+        String associatedData = resource.getString("associated_data");
+
+        return aesUtil.decryptToString(associatedData.getBytes("utf-8"), nonce.getBytes("utf-8"), ciphertext);
+    }
+
 
     /**
      * 验证签名
