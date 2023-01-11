@@ -46,4 +46,10 @@ public interface ProductOrderService {
      * @param paramsMap
      */
     JsonData processOrderCallbackMsg(ProductOrderPayTypeEnum wechatPay, Map<String, String> paramsMap);
+
+    /**
+     * 处理队列中订单相关消息
+     * @param eventMessage
+     */
+    void handleProductOrderMessage(EventMessage eventMessage);
 }

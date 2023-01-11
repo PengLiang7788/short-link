@@ -19,24 +19,25 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @Slf4j
-@RabbitListener(queuesToDeclare = {@Queue("order.close.queue")})
+@RabbitListener(queuesToDeclare = {
+        @Queue("order.close.queue"),
+        @Queue("order.update.queue")})
 public class ProductOrderMQListener {
 
     @Autowired
     private ProductOrderService productOrderService;
 
     @RabbitHandler
-    public void productOrderHandler(EventMessage eventMessage, Message message, Channel channel){
-        log.info("监听到消息 ProductOrderMQListener message的消息内容:{}",message);
-        try{
+    public void productOrderHandler(EventMessage eventMessage, Message message, Channel channel) {
+        log.info("监听到消息 ProductOrderMQListener message的消息内容:{}", message);
+        try {
 
-            //关闭订单
-            productOrderService.closeProductOrder(eventMessage);
+            productOrderService.handleProductOrderMessage(eventMessage);
 
-        }catch (Exception e){
-            log.error("消费失败:{}",eventMessage);
+        } catch (Exception e) {
+            log.error("消费失败:{}", eventMessage);
             throw new BizException(BizCodeEnum.MQ_CONSUME_EXCEPTION);
         }
-        log.info("消费成功:{}",eventMessage);
+        log.info("消费成功:{}", eventMessage);
     }
 }
