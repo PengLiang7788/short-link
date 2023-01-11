@@ -94,5 +94,5 @@ pay:
     # 自定义
     private-key-path: classpath:/cert/apiclient_key.pem
     success-return-url: https://www.nit.edu.cn
-    callback-url: http://api.open1024.com/shop-server/api/callback/order/v1/wechat
+    callback-url: http://cjwjb9.natappfree.cc/api/callback/order/v1/wechat
 

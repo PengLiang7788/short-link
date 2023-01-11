@@ -81,7 +81,6 @@ public class PayBeanConfig {
             verifier = new ScheduledUpdateCertificatesVerifier(
                     new WechatPay2Credentials(payConfig.getMchId(), new PrivateKeySigner(payConfig.getMchSerialNo(), getPrivateKey())),
                     payConfig.getApiV3Key().getBytes(StandardCharsets.UTF_8));
-
         } catch (IOException e) {
             log.error("证书定时获取微信签名验证器失败:{}", e);
         }
