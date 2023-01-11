@@ -47,7 +47,7 @@ public class PayInfoVo {
     /**
      * 订单支付超时 单位 毫秒
      */
-    private Long orderPayTimeOut;
+    private Long orderPayTimeoutMills;
 
     /**
      * 用户标识

@@ -48,19 +48,6 @@ public class WechatPayTest {
 
         String outTradeNo = CommonUtil.getStringNumRandom(32);
 
-        /**
-         * {
-         * 	"mchid": "1900006XXX",
-         * 	"out_trade_no": "native12177525012014070332333",
-         * 	"appid": "wxdace645e0bc2cXXX",
-         * 	"description": "Image形象店-深圳腾大-QQ公仔",
-         * 	"notify_url": "https://weixin.qq.com/",
-         * 	"amount": {
-         * 		"total": 1,
-         * 		"currency": "CNY"
-         *        }
-         * }
-         */
         JSONObject payObj = new JSONObject();
 
         payObj.put("mchid", payConfig.getMchId());

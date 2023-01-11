@@ -118,7 +118,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 .clientType(orderRequest.getClientType()).payType(orderRequest.getPayType())
                 .title(productDo.getTitle()).description("")
                 .payFee(orderRequest.getPayAmount())
-                .orderPayTimeOut(TImeConstant.ORDER_PAY_TIMEOUT_MILLS).build();
+                .orderPayTimeoutMills(TImeConstant.ORDER_PAY_TIMEOUT_MILLS).build();
 
         // 发送延迟消息
         EventMessage eventMessage = EventMessage.builder().eventMessageType(EventMessageType.PRODUCT_ORDER_NEW.name())
