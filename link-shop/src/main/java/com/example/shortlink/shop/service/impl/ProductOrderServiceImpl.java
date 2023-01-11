@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -133,9 +134,9 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
         // 对接支付信息
         String codeUrl = payFactory.pay(payInfoVo);
-        if (StringUtils.isNotBlank(codeUrl)){
-            Map<String ,String> resultMap = new HashMap<>();
-            resultMap.put("code_url",codeUrl);
+        if (StringUtils.isNotBlank(codeUrl)) {
+            Map<String, String> resultMap = new HashMap<>();
+            resultMap.put("code_url", codeUrl);
             resultMap.put("out_trade_no", payInfoVo.getOutTradeNo());
             return JsonData.buildSuccess(resultMap);
         }
@@ -151,6 +152,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
      * 确认未支付，本地取消订单
      * 如果第三方平台已经支付，主动的把订单状态改成已支付，造成该原因的情况可能是支付通道回调有问题，然后触发支付后的动作。
      * 触发方式：RPC or MQ？
+     *
      * @param eventMessage
      * @return
      */
@@ -160,19 +162,19 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         Long accountNo = eventMessage.getAccountNo();
 
         ProductOrderDo productOrderDo = productOrderManager.findByOutTradeNoAndAccountNo(outTradeNo, accountNo);
-        if (productOrderDo == null){
+        if (productOrderDo == null) {
             // 订单不存在
             log.warn("订单不存在");
             return true;
         }
 
-        if (productOrderDo.getState().equalsIgnoreCase(ProductOrderStateEnum.PAY.name())){
+        if (productOrderDo.getState().equalsIgnoreCase(ProductOrderStateEnum.PAY.name())) {
             // 已经支付
-            log.info("直接确认消息，订单已经支付:{}",eventMessage);
+            log.info("直接确认消息，订单已经支付:{}", eventMessage);
             return true;
         }
 
-        if (productOrderDo.getState().equalsIgnoreCase(ProductOrderStateEnum.NEW.name())){
+        if (productOrderDo.getState().equalsIgnoreCase(ProductOrderStateEnum.NEW.name())) {
             // 未支付，需要向第三方支付平台进行查询状态
             PayInfoVo payInfoVo = new PayInfoVo();
             payInfoVo.setPayType(productOrderDo.getPayType());
@@ -181,22 +183,65 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
             //TODO 向第三方支付平台查询订单状态
             String payResult = "";
-            if (StringUtils.isBlank(payResult)){
+            if (StringUtils.isBlank(payResult)) {
                 // 如果为空 则未支付成功 本地取消订单
-                productOrderManager.updateOrderPayState(outTradeNo,accountNo,
-                        ProductOrderStateEnum.CANCEL.name(),ProductOrderStateEnum.NEW.name());
-                log.info("未支付成功，本地取消订单:{}",eventMessage);
-            }else {
+                productOrderManager.updateOrderPayState(outTradeNo, accountNo,
+                        ProductOrderStateEnum.CANCEL.name(), ProductOrderStateEnum.NEW.name());
+                log.info("未支付成功，本地取消订单:{}", eventMessage);
+            } else {
                 // 支付成功 主动把订单状态更新成支付成功
-                log.warn("支付成功，但是微信回调通知失败，需要排查问题:{}",eventMessage);
-                productOrderManager.updateOrderPayState(outTradeNo,accountNo,
-                        ProductOrderStateEnum.PAY.name(),ProductOrderStateEnum.NEW.name());
+                log.warn("支付成功，但是微信回调通知失败，需要排查问题:{}", eventMessage);
+                productOrderManager.updateOrderPayState(outTradeNo, accountNo,
+                        ProductOrderStateEnum.PAY.name(), ProductOrderStateEnum.NEW.name());
                 //TODO 触发支付成功后的逻辑
 
             }
         }
 
         return true;
+    }
+
+    /**
+     * 处理微信回调通知
+     *
+     * @param payType
+     * @param paramsMap
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public JsonData processOrderCallbackMsg(ProductOrderPayTypeEnum payType, Map<String, String> paramsMap) {
+        // 商户订单号
+        String outTradeNo = paramsMap.get("out_trade_no");
+        // 交易状态
+        String tradeState = paramsMap.get("trade_state");
+        // 账户号
+        Long accountNo = Long.valueOf(paramsMap.get("account_no"));
+
+        ProductOrderDo productOrderDo = productOrderManager.findByOutTradeNoAndAccountNo(outTradeNo, accountNo);
+
+        Map<String, Object> content = new HashMap<>(4);
+        content.put("outTradeNo", outTradeNo);
+        content.put("buyNum", productOrderDo.getBuyNum());
+        content.put("accountNo", accountNo);
+        content.put("product", productOrderDo.getProductSnapshot());
+
+        // 构建消息
+        EventMessage eventMessage = EventMessage.builder().bizId(outTradeNo)
+                .accountNo(accountNo).messageId(outTradeNo).content(JsonUtil.obj2Json(content))
+                .eventMessageType(EventMessageType.ORDER_PAY.name()).build();
+
+        if (payType.name().equalsIgnoreCase(ProductOrderPayTypeEnum.ALI_PAY.name())) {
+            //TODO 支付宝支付
+        } else if (payType.name().equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_PAY.name())) {
+            // 微信支付
+            if ("SUCCESS".equalsIgnoreCase(tradeState)) {
+                rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange()
+                        , rabbitMQConfig.getOrderUpdateTrafficRoutingKey(), eventMessage);
+
+                return JsonData.buildSuccess();
+            }
+        }
+        return JsonData.buildResult(BizCodeEnum.PAY_ORDER_CALLBACK_NOT_SUCCESS);
     }
 
 

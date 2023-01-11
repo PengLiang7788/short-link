@@ -1,6 +1,7 @@
 package com.example.shortlink.shop.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.shortlink.common.enums.ProductOrderPayTypeEnum;
 import com.example.shortlink.shop.config.WechatPayConfig;
 import com.example.shortlink.shop.service.ProductOrderService;
 import com.wechat.pay.contrib.apache.httpclient.auth.ScheduledUpdateCertificatesVerifier;
@@ -84,7 +85,8 @@ public class PayCallbackController {
                 log.info("解密后的明文:{}", plainBody);
 
                 Map<String, String> paramsMap = convertWechatPayMsgToMap(plainBody);
-                //TODO 处理业务逻辑
+                // 处理业务逻辑
+                productOrderService.processOrderCallbackMsg(ProductOrderPayTypeEnum.WECHAT_PAY,paramsMap);
 
                 // 响应微信
                 map.put("code", "SUCCESS");

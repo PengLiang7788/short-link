@@ -1,5 +1,6 @@
 package com.example.shortlink.shop.service;
 
+import com.example.shortlink.common.enums.ProductOrderPayTypeEnum;
 import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.shop.controller.request.ConfirmOrderRequest;
@@ -38,4 +39,11 @@ public interface ProductOrderService {
      * @param eventMessage
      */
     boolean closeProductOrder(EventMessage eventMessage);
+
+    /**
+     * 处理微信回调通知
+     * @param wechatPay
+     * @param paramsMap
+     */
+    JsonData processOrderCallbackMsg(ProductOrderPayTypeEnum wechatPay, Map<String, String> paramsMap);
 }
