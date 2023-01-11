@@ -85,6 +85,25 @@ spring:
                 id: ${workId}
             #id生成策略
             type: SNOWFLAKE
+  # rabbitmq 配置
+  rabbitmq:
+    host: 212.129.255.88
+    port: 5672
+    # 需要手工创建虚拟机
+    virtual-host: dev
+    username: admin
+    password: pl1008666.
+    # 消息确认方式 manual(手动ack) auto 自动ack 消息消费重试达到指定次数进到异常交换机和异常队列，需要改为自动确认消息
+    listener:
+      simple:
+        acknowledge-mode: auto
+        # 开启重试机制
+        retry:
+          enabled: true
+          # 最大重试次数
+          max-attempts: 4
+          # 重试消息的时间间隔 5秒
+          initial-interval: 5000
 
 sms:
   app-code: 39dafca34fae4f95ac2593d6c7b292da
@@ -96,3 +115,5 @@ aliyun:
     access-key-id: LTAI5tAtoRgNimet8jE4RMa9
     access-key-secret: QzwwDCB23IHj0c4FkYdmb0bUKHfVkq
     bucketname: peng-short-link
+
+
