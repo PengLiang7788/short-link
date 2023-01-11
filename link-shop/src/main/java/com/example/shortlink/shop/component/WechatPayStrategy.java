@@ -6,6 +6,7 @@ import com.example.shortlink.shop.config.WechatPayConfig;
 import com.example.shortlink.shop.vo.PayInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -63,7 +64,7 @@ public class WechatPayStrategy implements PayStrategy {
         // 处理请求body参数
         String body = payObj.toJSONString();
 
-        log.info("请求参数:{}", body);
+        log.debug("请求参数:{}", body);
 
         StringEntity entity = new StringEntity(body, "utf-8");
         entity.setContentType("application/json");
@@ -99,16 +100,80 @@ public class WechatPayStrategy implements PayStrategy {
 
     @Override
     public String refund(PayInfoVo payInfoVo) {
-        return PayStrategy.super.refund(payInfoVo);
+        return null;
     }
 
+    /**
+     * 微信支付状态查询
+     * @param payInfoVo
+     * @return
+     */
     @Override
     public String queryPayStatus(PayInfoVo payInfoVo) {
-        return PayStrategy.super.queryPayStatus(payInfoVo);
+        String url = String.format(WechatPayApi.NATIVE_QUERY, payInfoVo.getOutTradeNo(), payConfig.getMchId());
+
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Accept", "application/json");
+
+        String result = "";
+        try (CloseableHttpResponse response = wechatPayClient.execute(httpGet)) {
+
+            //响应码
+            int statusCode = response.getStatusLine().getStatusCode();
+            //响应体
+            String responseStr = EntityUtils.toString(response.getEntity());
+
+            log.debug("查询响应码:{},响应体:{}", statusCode, responseStr);
+            if (statusCode == HttpStatus.OK.value()) {
+                JSONObject jsonObject = JSONObject.parseObject(responseStr);
+                if (jsonObject.containsKey("trade_state")) {
+                    result = jsonObject.getString("trade_state");
+                }
+            } else {
+                log.error("查询支付状态响应失败:{},响应体:{}", statusCode, responseStr);
+            }
+
+
+        } catch (Exception e) {
+            log.error("微信支付状态查询响应异常:{}", e);
+        }
+        return result;
     }
 
     @Override
     public String closeOrder(PayInfoVo payInfoVo) {
-        return PayStrategy.super.closeOrder(payInfoVo);
+        String outTradeNo = payInfoVo.getOutTradeNo();
+
+        JSONObject payObj = new JSONObject();
+        payObj.put("mchid", payConfig.getMchId());
+        String body = payObj.toJSONString();
+
+        log.debug("请求参数:{}", body);
+
+        StringEntity entity = new StringEntity(body, "utf-8");
+        entity.setContentType("application/json");
+
+        String url = String.format(WechatPayApi.NATIVE_CLOSE_ORDER, outTradeNo);
+
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setEntity(entity);
+
+        String result = "";
+        try (CloseableHttpResponse response = wechatPayClient.execute(httpPost)) {
+
+            //响应码
+            int statusCode = response.getStatusLine().getStatusCode();
+            log.debug("关闭订单响应码:{},无响应体", statusCode);
+            if (statusCode == HttpStatus.NO_CONTENT.value()){
+                result = "CLOSE_SUCCESS";
+            }else {
+                log.error("关闭订单响应码失败:{}", statusCode);
+            }
+
+        } catch (Exception e) {
+            log.error("关闭订单响应码异常:{}", e);
+        }
+        return result;
     }
 }

@@ -113,7 +113,6 @@ public class ProductOrderController {
                 CommonUtil.sendJsonMessage(response, jsonData);
             }
 
-
         } else {
             // 支付失败
             log.error("创建订单失败{}", jsonData.toString());
