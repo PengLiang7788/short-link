@@ -1,6 +1,7 @@
 package com.example.shortlink.account.service.impl;
 
 import com.alibaba.nacos.common.utils.MD5Utils;
+import com.example.shortlink.account.config.RabbitMQConfig;
 import com.example.shortlink.account.controller.request.AccountLoginRequest;
 import com.example.shortlink.account.controller.request.AccountRegisterRequest;
 import com.example.shortlink.account.manager.AccountManager;
@@ -9,7 +10,9 @@ import com.example.shortlink.account.service.AccountService;
 import com.example.shortlink.account.service.NotifyService;
 import com.example.shortlink.common.enums.AuthTypeEnum;
 import com.example.shortlink.common.enums.BizCodeEnum;
+import com.example.shortlink.common.enums.EventMessageType;
 import com.example.shortlink.common.enums.SendCodeEnum;
+import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.model.LoginUser;
 import com.example.shortlink.common.util.CommonUtil;
 import com.example.shortlink.common.util.IDUtil;
@@ -18,9 +21,12 @@ import com.example.shortlink.common.util.JsonData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,11 +38,22 @@ import java.util.List;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
 
+    /**
+     * 免费流量包商品id
+     */
+    private static final Long FREE_TRAFFIC_PRODUCT_ID = 1L;
+
     @Autowired
     private NotifyService notifyService;
 
     @Autowired
     private AccountManager accountManager;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private RabbitMQConfig rabbitMQConfig;
 
     /**
      * 用户注册
@@ -50,6 +67,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public JsonData register(AccountRegisterRequest registerRequest) {
         boolean checkCode = false;
         // 判断验证码
@@ -78,7 +96,7 @@ public class AccountServiceImpl implements AccountService {
         int rows = accountManager.insert(accountDO);
         log.info("rows:{},注册成功:{}", rows, accountDO);
 
-        // 用户注册成功，发放福利 TODO
+        // 用户注册成功，发放福利
         userRegisterInitTask(accountDO);
         return JsonData.buildSuccess();
     }
@@ -111,11 +129,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * 用户初始化，发放福利:发放流量包 TODO
+     * 用户初始化，发放福利:发放流量包
      *
      * @param accountDO
      */
     private void userRegisterInitTask(AccountDO accountDO) {
 
+        EventMessage eventMessage = EventMessage.builder().messageId(IDUtil.generateSnowFlakeID().toString())
+                .accountNo(accountDO.getAccountNo())
+                .eventMessageType(EventMessageType.TRAFFIC_FREE_INIT.name())
+                .bizId(FREE_TRAFFIC_PRODUCT_ID.toString())
+                .build();
+
+        // 发送发放流量包消息
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getTrafficEventExchange(),
+                rabbitMQConfig.getTrafficFreeInitRoutingKey(),eventMessage);
     }
 }
