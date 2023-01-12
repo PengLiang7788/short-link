@@ -44,7 +44,7 @@ public class TrafficServiceImpl implements TrafficService {
             Integer buyNum = (Integer) orderInfoMap.get("buyNum");
             String productStr = (String) orderInfoMap.get("product");
             ProductVo productVo = JsonUtil.json2Obj(productStr, ProductVo.class);
-            log.info("商品信息", productVo);
+            log.info("商品信息:{}", productVo);
 
             // 流量包过期时间
             LocalDateTime expiredDateTime = LocalDateTime.now().plusDays(productVo.getValidDay());
