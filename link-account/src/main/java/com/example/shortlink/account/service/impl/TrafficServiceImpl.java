@@ -1,13 +1,19 @@
 package com.example.shortlink.account.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.shortlink.account.controller.request.TrafficPageRequest;
 import com.example.shortlink.account.manager.TrafficManager;
 import com.example.shortlink.account.model.TrafficDO;
 import com.example.shortlink.account.service.TrafficService;
 import com.example.shortlink.account.vo.ProductVo;
+import com.example.shortlink.account.vo.TrafficVo;
 import com.example.shortlink.common.enums.EventMessageType;
+import com.example.shortlink.common.interceptor.LoginInterceptor;
 import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.util.JsonUtil;
+import jodd.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,7 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author 彭亮
@@ -30,6 +39,11 @@ public class TrafficServiceImpl implements TrafficService {
     private TrafficManager trafficManager;
 
 
+    /**
+     * 处理流量包消费业务
+     *
+     * @param eventMessage
+     */
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void handleTrafficMessage(EventMessage eventMessage) {
@@ -65,5 +79,51 @@ public class TrafficServiceImpl implements TrafficService {
             int rows = trafficManager.add(trafficDO);
             log.info("消费消息新增流量包 rows={},{}", rows, trafficDO);
         }
+    }
+
+    /**
+     * 分页查询流量包列表，查询可用的流量包
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public Map<String, Object> pageAvailable(TrafficPageRequest request) {
+        int size = request.getSize();
+        int page = request.getPage();
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+
+        IPage<TrafficDO> trafficDOIPage = trafficManager.pageAvailable(page, size, accountNo);
+        // 获取流量包列表
+        List<TrafficDO> records = trafficDOIPage.getRecords();
+
+        List<TrafficVo> trafficVoList = records.stream().map(item -> {
+            TrafficVo trafficVo = new TrafficVo();
+            BeanUtils.copyProperties(item, trafficVo);
+            return trafficVo;
+        }).collect(Collectors.toList());
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("total_record", trafficDOIPage.getTotal());
+        map.put("total_page", trafficDOIPage.getPages());
+        map.put("current_data", trafficVoList);
+
+        return map;
+    }
+
+    /**
+     * 查找流量包详情
+     *
+     * @param trafficId
+     * @return
+     */
+    @Override
+    public TrafficVo detail(long trafficId) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        TrafficDO trafficDO = trafficManager.findByIdAndAccountNo(trafficId, accountNo);
+        TrafficVo trafficVo = new TrafficVo();
+        BeanUtils.copyProperties(trafficDO,trafficVo);
+
+        return trafficVo;
     }
 }
