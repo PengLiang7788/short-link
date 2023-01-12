@@ -1,7 +1,9 @@
 package com.example.shortlink.account.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.shortlink.account.controller.request.TrafficPageRequest;
+import com.example.shortlink.account.feign.ProductFeignService;
 import com.example.shortlink.account.manager.TrafficManager;
 import com.example.shortlink.account.model.TrafficDO;
 import com.example.shortlink.account.service.TrafficService;
@@ -10,8 +12,8 @@ import com.example.shortlink.account.vo.TrafficVo;
 import com.example.shortlink.common.enums.EventMessageType;
 import com.example.shortlink.common.interceptor.LoginInterceptor;
 import com.example.shortlink.common.model.EventMessage;
+import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.common.util.JsonUtil;
-import jodd.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class TrafficServiceImpl implements TrafficService {
     @Autowired
     private TrafficManager trafficManager;
 
+    @Autowired
+    private ProductFeignService productFeignService;
+
 
     /**
      * 处理流量包消费业务
@@ -47,13 +52,14 @@ public class TrafficServiceImpl implements TrafficService {
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void handleTrafficMessage(EventMessage eventMessage) {
+        Long accountNo = eventMessage.getAccountNo();
+
         String messageType = eventMessage.getEventMessageType();
         if (EventMessageType.PRODUCT_ORDER_PAY.name().equalsIgnoreCase(messageType)) {
             // 订单已经支付，新增流量
             String content = eventMessage.getContent();
             Map<String, Object> orderInfoMap = JsonUtil.json2Obj(content, Map.class);
             // 还原商品订单商品信息
-            Long accountNo = (Long) orderInfoMap.get("accountNo");
             String outTradeNo = (String) orderInfoMap.get("outTradeNo");
             Integer buyNum = (Integer) orderInfoMap.get("buyNum");
             String productStr = (String) orderInfoMap.get("product");
@@ -78,6 +84,26 @@ public class TrafficServiceImpl implements TrafficService {
 
             int rows = trafficManager.add(trafficDO);
             log.info("消费消息新增流量包 rows={},{}", rows, trafficDO);
+        } else if (EventMessageType.TRAFFIC_FREE_INIT.name().equalsIgnoreCase(messageType)) {
+            // 账户注册，发放免费流量包
+            Long productId = Long.valueOf(eventMessage.getBizId());
+
+            JsonData jsonData = productFeignService.detail(productId);
+            ProductVo productVo = jsonData.getData(new TypeReference<ProductVo>() {});
+
+            // 构建流量包对象
+            TrafficDO trafficDO = TrafficDO.builder()
+                    .accountNo(accountNo)
+                    .dayLimit(productVo.getDayTimes())
+                    .dayUsed(0)
+                    .totalLimit(productVo.getTotalTimes())
+                    .pluginType(productVo.getPluginType())
+                    .level(productVo.getLevel())
+                    .productId(productVo.getId())
+                    .outTradeNo("free_init")
+                    .expiredDate(new Date()).build();
+
+            trafficManager.add(trafficDO);
         }
     }
 
@@ -122,7 +148,7 @@ public class TrafficServiceImpl implements TrafficService {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
         TrafficDO trafficDO = trafficManager.findByIdAndAccountNo(trafficId, accountNo);
         TrafficVo trafficVo = new TrafficVo();
-        BeanUtils.copyProperties(trafficDO,trafficVo);
+        BeanUtils.copyProperties(trafficDO, trafficVo);
 
         return trafficVo;
     }
