@@ -1,9 +1,6 @@
 package com.example.shortlink.account.controller.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * @author 彭亮
@@ -12,6 +9,14 @@ import lombok.NoArgsConstructor;
 @Data
 public class UsedTrafficRequest {
 
+    /**
+     * 账号
+     */
+    private Long accountNo;
 
+    /**
+     * 业务id，短链码
+     */
+    private String bizId;
 
 }

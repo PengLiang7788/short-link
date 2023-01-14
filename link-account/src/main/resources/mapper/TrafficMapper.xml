@@ -26,7 +26,7 @@
     <!--给某个流量包增加天使用次数-->
     <update id="addDayUsedTimes">
         update traffic
-        set day_used= day_used + #{usedTimes}
+        set day_used = day_used + #{usedTimes}
         where id = #{trafficId} and account_no = #{accountNo}
         and (day_limit - day_used) >= #{usedTimes} limit 1
     </update>
@@ -37,7 +37,7 @@
         set day_used = day_used - #{usedTimes}
         where account_no = #{accountNo}
           and id = #{trafficId}
-          and (day_used - #{usedTimes}) > 0 limit 1
+          and (day_used - #{usedTimes}) >= 0 limit 1
     </update>
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.example.shortlink.account.manager.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -104,6 +105,7 @@ public class TrafficManagerImpl implements TrafficManager {
 
     /**
      * 查找可用的短链流量包(未过期)，包括免费流量包
+     * select * from traffic where account_no = 1111 and (expire_date = ? or out_trade_no = free_init)
      *
      * @param accountNo
      * @return
@@ -113,11 +115,12 @@ public class TrafficManagerImpl implements TrafficManager {
 
         String today = TimeUtil.format(new Date(), "yyyy-MM-dd");
 
-        List<TrafficDO> trafficDOList = trafficMapper.selectList(new LambdaQueryWrapper<TrafficDO>()
-                .eq(TrafficDO::getAccountNo, accountNo)
-                .eq(TrafficDO::getPluginType, PluginTypeEnum.SHORT_LINK.name())
-                .ge(TrafficDO::getExpiredDate, today));
-        return trafficDOList;
+        LambdaQueryWrapper<TrafficDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TrafficDO::getAccountNo,accountNo);
+        queryWrapper.and(wrapper->wrapper.ge(TrafficDO::getExpiredDate,today).or().eq(TrafficDO::getOutTradeNo,"free_init"));
+
+
+        return trafficMapper.selectList(queryWrapper);
     }
 
     /**

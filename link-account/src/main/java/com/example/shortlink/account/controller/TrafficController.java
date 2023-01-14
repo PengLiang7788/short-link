@@ -57,6 +57,8 @@ public class TrafficController {
     public JsonData useTraffic(UsedTrafficRequest usedTrafficRequest, HttpServletRequest request) {
         //TODO 具体使用流量包逻辑
 
-        return JsonData.buildSuccess();
+        JsonData jsonData = trafficService.reduce(usedTrafficRequest);
+
+        return jsonData;
     }
 }

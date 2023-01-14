@@ -1,8 +1,10 @@
 package com.example.shortlink.account.service;
 
 import com.example.shortlink.account.controller.request.TrafficPageRequest;
+import com.example.shortlink.account.controller.request.UsedTrafficRequest;
 import com.example.shortlink.account.vo.TrafficVo;
 import com.example.shortlink.common.model.EventMessage;
+import com.example.shortlink.common.util.JsonData;
 
 import java.util.Map;
 
@@ -40,4 +42,13 @@ public interface TrafficService {
      * @return
      */
     boolean deleteExpireTraffic();
+
+    /**
+     * 扣减流量包
+     *
+     * @param usedTrafficRequest
+     * @return
+     */
+    JsonData reduce(UsedTrafficRequest usedTrafficRequest);
+
 }
