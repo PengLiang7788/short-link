@@ -116,4 +116,29 @@ aliyun:
     access-key-secret: QzwwDCB23IHj0c4FkYdmb0bUKHfVkq
     bucketname: peng-short-link
 
+# xxl-job配置
+logging:
+  config: classpath:logback.xml
+
+#调度中心部署地址，多个配置之间用逗号分离
+xxl:
+  job:
+    admin:
+      address: http://192.168.200.140:8080/xxl-job-admin
+    # 执行器token 非空时启用 xxl-job,access token
+    accessToken: pl1008666.
+    executor:
+      # 执行器app名称，需要和控制台那边配置一样，不然注册不上去
+      appname: traffic-app-executor
+      # [选填]执行器注册：优先使用该配置座位注册地址，为空时使用内嵌服务“IP:PORT”作为注册地址
+      # 从而更灵活的支持容器类型执行器动态ip和动态映射端口问题
+      address:
+      # [选填]执行器ip，默认为空表示自动获取IP(即springboot容器的ip和端口，可以自动获取，也可以指定)，多网卡时可手动设置指定ip，该ip不会绑定Host
+      ip:
+      # [选填]执行器端口，小于等于0则自动获取，默认端口为9999，单机部署多个执行器时，注意要配置不同执行器端口
+      port: 9999
+      # 执行器日志文件存储路径，需要对该路径拥有读写权限为空则使用默认路径
+      logpath: ./data/logs/xxl-job/executor
+      # 日志保留天数
+      logretentiondays: 30
 
