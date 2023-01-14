@@ -93,4 +93,17 @@ public class TrafficManagerImpl implements TrafficManager {
                 .set(TrafficDO::getDayUsed, dayUsedTimes));
         return rows;
     }
+
+    /**
+     * 删除过期流量包
+     *
+     * @return
+     */
+    @Override
+    public boolean deleteExpireTraffic() {
+        int rows = trafficMapper.delete(new LambdaQueryWrapper<TrafficDO>()
+                .le(TrafficDO::getExpiredDate, new Date()));
+        log.info("删除过期流量包影响行数:rows={}", rows);
+        return true;
+    }
 }

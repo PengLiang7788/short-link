@@ -1,6 +1,7 @@
 package com.example.link.account.db;
 
 import com.example.shortlink.account.AccountServiceApplication;
+import com.example.shortlink.account.manager.TrafficManager;
 import com.example.shortlink.account.mapper.TrafficMapper;
 import com.example.shortlink.account.model.TrafficDO;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,9 @@ public class TrafficTest {
     @Autowired
     private TrafficMapper trafficMapper;
 
+    @Autowired
+    private TrafficManager trafficManager;
+
     @Test
     public void testTraffic(){
         Random random = new Random();
@@ -32,6 +36,11 @@ public class TrafficTest {
             trafficDO.setAccountNo(Long.valueOf(random.nextInt(100)));
             trafficMapper.insert(trafficDO);
         }
+    }
+
+    @Test
+    public void testDelete(){
+        trafficManager.deleteExpireTraffic();
     }
 
 }

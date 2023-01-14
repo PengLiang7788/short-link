@@ -10,6 +10,7 @@ import com.example.shortlink.account.model.TrafficDO;
 public interface TrafficManager {
     /**
      * 新增流量包
+     *
      * @param trafficDO
      * @return
      */
@@ -17,27 +18,39 @@ public interface TrafficManager {
 
     /**
      * 分页查询可用的流量包
+     *
      * @param page
      * @param size
      * @param accountNo
      * @return
      */
-    IPage<TrafficDO> pageAvailable(int page,int size,long accountNo);
+    IPage<TrafficDO> pageAvailable(int page, int size, long accountNo);
 
     /**
      * 查找流量包详情
+     *
      * @param trafficId
      * @param accountNo
      * @return
      */
-    TrafficDO findByIdAndAccountNo(Long trafficId,Long accountNo);
+    TrafficDO findByIdAndAccountNo(Long trafficId, Long accountNo);
 
     /**
      * 增加某个流量包天使用次数
+     *
      * @param currentTrafficId
      * @param accountNo
      * @param dayUsedTimes
      * @return
      */
-    int addDayUsedTimes(long currentTrafficId,Long accountNo,int dayUsedTimes);
+    int addDayUsedTimes(long currentTrafficId, Long accountNo, int dayUsedTimes);
+
+    /**
+     * 删除过期流量包
+     *
+     * @return
+     */
+    boolean deleteExpireTraffic();
+
+
 }

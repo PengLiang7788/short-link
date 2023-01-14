@@ -89,7 +89,8 @@ public class TrafficServiceImpl implements TrafficService {
             Long productId = Long.valueOf(eventMessage.getBizId());
 
             JsonData jsonData = productFeignService.detail(productId);
-            ProductVo productVo = jsonData.getData(new TypeReference<ProductVo>() {});
+            ProductVo productVo = jsonData.getData(new TypeReference<ProductVo>() {
+            });
 
             // 构建流量包对象
             TrafficDO trafficDO = TrafficDO.builder()
@@ -151,5 +152,15 @@ public class TrafficServiceImpl implements TrafficService {
         BeanUtils.copyProperties(trafficDO, trafficVo);
 
         return trafficVo;
+    }
+
+    /**
+     * 删除过期流量包
+     *
+     * @return
+     */
+    @Override
+    public boolean deleteExpireTraffic() {
+        return trafficManager.deleteExpireTraffic();
     }
 }
