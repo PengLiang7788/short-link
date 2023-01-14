@@ -1,7 +1,7 @@
 package com.example.shortlink.account.service;
 
 import com.example.shortlink.account.controller.request.TrafficPageRequest;
-import com.example.shortlink.account.controller.request.UsedTrafficRequest;
+import com.example.shortlink.account.controller.request.UseTrafficRequest;
 import com.example.shortlink.account.vo.TrafficVo;
 import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.util.JsonData;
@@ -49,6 +49,6 @@ public interface TrafficService {
      * @param usedTrafficRequest
      * @return
      */
-    JsonData reduce(UsedTrafficRequest usedTrafficRequest);
+    JsonData reduce(UseTrafficRequest usedTrafficRequest);
 
 }

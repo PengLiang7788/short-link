@@ -22,6 +22,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 // 排除不拦截
                 .excludePathPatterns(
                         "/api/account/*/register","/api/account/*/login","/api/account/*/upload",
-                        "/api/notify/*/captcha","/api/notify/*/send_code");
+                        "/api/notify/*/captcha","/api/notify/*/send_code","/api/traffic/*/reduce");
     }
 }

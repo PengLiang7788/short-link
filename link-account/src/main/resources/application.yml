@@ -142,3 +142,8 @@ xxl:
       # 日志保留天数
       logretentiondays: 30
 
+# 用于rpc调用token验证
+rpc:
+  token: pl1008666.
+
+  

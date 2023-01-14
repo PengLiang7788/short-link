@@ -3,7 +3,7 @@ package com.example.shortlink.account.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.shortlink.account.controller.request.TrafficPageRequest;
-import com.example.shortlink.account.controller.request.UsedTrafficRequest;
+import com.example.shortlink.account.controller.request.UseTrafficRequest;
 import com.example.shortlink.account.feign.ProductFeignService;
 import com.example.shortlink.account.manager.TrafficManager;
 import com.example.shortlink.account.model.TrafficDO;
@@ -20,7 +20,6 @@ import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.common.util.JsonUtil;
 import com.example.shortlink.common.util.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -186,7 +185,7 @@ public class TrafficServiceImpl implements TrafficService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public JsonData reduce(UsedTrafficRequest trafficRequest) {
+    public JsonData reduce(UseTrafficRequest trafficRequest) {
         Long accountNo = trafficRequest.getAccountNo();
 
         // 处理流量包，筛选出未更新流量包，当前使用流量包

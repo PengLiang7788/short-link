@@ -11,10 +11,8 @@ import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.common.util.JsonUtil;
 import com.example.shortlink.link.component.ShortLinkComponent;
 import com.example.shortlink.link.config.RabbitMQConfig;
-import com.example.shortlink.link.controller.request.ShortLinkAddRequest;
-import com.example.shortlink.link.controller.request.ShortLinkDelRequest;
-import com.example.shortlink.link.controller.request.ShortLinkPageRequest;
-import com.example.shortlink.link.controller.request.ShortLinkUpdateRequest;
+import com.example.shortlink.link.controller.request.*;
+import com.example.shortlink.link.feign.TrafficFeignService;
 import com.example.shortlink.link.manager.DomainManager;
 import com.example.shortlink.link.manager.GroupCodeMappingManager;
 import com.example.shortlink.link.manager.LinkGroupManager;
@@ -70,6 +68,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
     @Autowired
     private GroupCodeMappingManager groupCodeMappingManager;
+
+    @Autowired
+    private TrafficFeignService trafficFeignService;
 
     /**
      * 解析短链
@@ -165,16 +166,20 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                 //先判断短链码是否被占用
                 ShortLinkDO shortLinkCodeDoInDB = shortLinkManager.findByShortLinkCode(shortLinkCode);
                 if (shortLinkCodeDoInDB == null) {
-                    ShortLinkDO shortLinkDO = ShortLinkDO.builder().accountNo(accountNo)
-                            .code(shortLinkCode).title(shortLinkAddRequest.getTitle())
-                            .originalUrl(shortLinkAddRequest.getOriginalUrl())
-                            .domain(domainDo.getValue()).groupId(linkGroupDO.getId())
-                            .expired(shortLinkAddRequest.getExpired()).sign(originalUrlDigest)
-                            .state(ShortLinkStateEnum.ACTIVE.name()).del(0).build();
+                    boolean reduceFlag = reduceTraffic(eventMessage, shortLinkCode);
+                    if (reduceFlag) {
+                        ShortLinkDO shortLinkDO = ShortLinkDO.builder().accountNo(accountNo)
+                                .code(shortLinkCode).title(shortLinkAddRequest.getTitle())
+                                .originalUrl(shortLinkAddRequest.getOriginalUrl())
+                                .domain(domainDo.getValue()).groupId(linkGroupDO.getId())
+                                .expired(shortLinkAddRequest.getExpired()).sign(originalUrlDigest)
+                                .state(ShortLinkStateEnum.ACTIVE.name()).del(0).build();
 
-                    shortLinkManager.addShortLink(shortLinkDO);
+                        shortLinkManager.addShortLink(shortLinkDO);
 
-                    return true;
+                        return true;
+                    }
+
                 } else {
                     log.error("C端短链码重复:{}", eventMessage);
                     duplicationCodeFlag = true;
@@ -215,6 +220,28 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             handleAddShortLink(eventMessage);
         }
         return false;
+    }
+
+    /**
+     * 扣减流量包
+     *
+     * @param eventMessage
+     * @param shortLinkCode
+     * @return
+     */
+    private boolean reduceTraffic(EventMessage eventMessage, String shortLinkCode) {
+
+        UseTrafficRequest useTrafficRequest = UseTrafficRequest.builder().accountNo(eventMessage.getAccountNo())
+                .bizId(shortLinkCode).build();
+
+        JsonData jsonData = trafficFeignService.useTraffic(useTrafficRequest);
+
+        if (jsonData.getCode() != 0) {
+            log.error("流量包不足，扣减失败:{}", eventMessage);
+            return false;
+        }
+
+        return true;
     }
 
     /**

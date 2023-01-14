@@ -7,7 +7,7 @@ import lombok.Data;
  * @create 2023-01-12 10:06
  */
 @Data
-public class UsedTrafficRequest {
+public class UseTrafficRequest {
 
     /**
      * 账号

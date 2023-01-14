@@ -1,11 +1,12 @@
 package com.example.shortlink.account.controller;
 
 import com.example.shortlink.account.controller.request.TrafficPageRequest;
-import com.example.shortlink.account.controller.request.UsedTrafficRequest;
+import com.example.shortlink.account.controller.request.UseTrafficRequest;
 import com.example.shortlink.account.service.TrafficService;
 import com.example.shortlink.account.vo.TrafficVo;
 import com.example.shortlink.common.util.JsonData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,9 @@ public class TrafficController {
 
     @Autowired
     private TrafficService trafficService;
+
+    @Value("${rpc.token}")
+    private String rpcToken;
 
     /**
      * 分页查询流量包列表，查询可用的流量包
@@ -54,11 +58,15 @@ public class TrafficController {
      * @return
      */
     @PostMapping("/reduce")
-    public JsonData useTraffic(@RequestBody UsedTrafficRequest usedTrafficRequest, HttpServletRequest request) {
-        //TODO 具体使用流量包逻辑
+    public JsonData useTraffic(@RequestBody UseTrafficRequest usedTrafficRequest, HttpServletRequest request) {
+        String requestToken = request.getHeader("rpc-token");
 
-        JsonData jsonData = trafficService.reduce(usedTrafficRequest);
-
-        return jsonData;
+        if (rpcToken.equalsIgnoreCase(requestToken)) {
+            // 具体使用流量包逻辑
+            JsonData jsonData = trafficService.reduce(usedTrafficRequest);
+            return jsonData;
+        } else {
+            return JsonData.buildError("非法访问");
+        }
     }
 }
