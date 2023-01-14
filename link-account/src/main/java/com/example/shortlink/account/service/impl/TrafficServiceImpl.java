@@ -212,7 +212,6 @@ public class TrafficServiceImpl implements TrafficService {
             throw new BizException(BizCodeEnum.TRAFFIC_REDUCE_FAIL);
         }
 
-
         return JsonData.buildSuccess();
     }
 
@@ -241,7 +240,7 @@ public class TrafficServiceImpl implements TrafficService {
         String todayStr = TimeUtil.format(new Date(), "yyyy-MM-dd");
 
         for (TrafficDO trafficDO : trafficDOList) {
-            String trafficUpdateDate = TimeUtil.format(trafficDO.getExpiredDate(), "yyyy-MM-dd");
+            String trafficUpdateDate = TimeUtil.format(trafficDO.getGmtModified(), "yyyy-MM-dd");
             if (todayStr.equalsIgnoreCase(trafficUpdateDate)) {
                 // 已经更新 获取当前流量包还剩余的使用次数
                 int dayLeftTimes = trafficDO.getDayLimit() - trafficDO.getDayUsed();
@@ -267,7 +266,10 @@ public class TrafficServiceImpl implements TrafficService {
                 }
             }
         }
-        UseTrafficVo useTrafficVo = new UseTrafficVo(dayTotalLeftTimes,currentTrafficDo,unUpdateTrafficIds);
+        UseTrafficVo useTrafficVo = new UseTrafficVo();
+        useTrafficVo.setCurrentTrafficDo(currentTrafficDo);
+        useTrafficVo.setUnUpdateTrafficIds(unUpdateTrafficIds);
+        useTrafficVo.setDayTotalLeftTimes(dayTotalLeftTimes);
         return useTrafficVo;
     }
 }

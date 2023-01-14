@@ -80,32 +80,24 @@ public class TrafficManagerImpl implements TrafficManager {
         return trafficDO;
     }
 
-    /**
-     * 给某个流量包增加天使用次数
-     *
-     * @param currentTrafficId
-     * @param accountNo
-     * @param dayUsedTimes
-     * @return
-     */
-
 
     /**
-     * 删除过期流量包
+     * 删除过期流量包(付费)
      *
      * @return
      */
     @Override
     public boolean deleteExpireTraffic() {
         int rows = trafficMapper.delete(new LambdaQueryWrapper<TrafficDO>()
-                .le(TrafficDO::getExpiredDate, new Date()));
+                .le(TrafficDO::getExpiredDate, new Date())
+                .ne(TrafficDO::getOutTradeNo,"free_init"));
         log.info("删除过期流量包影响行数:rows={}", rows);
         return true;
     }
 
     /**
      * 查找可用的短链流量包(未过期)，包括免费流量包
-     * select * from traffic where account_no = 1111 and (expire_date = ? or out_trade_no = free_init)
+     * select * from traffic where account_no = 1111 and (expire_date >= ? or out_trade_no = free_init)
      *
      * @param accountNo
      * @return
@@ -118,7 +110,6 @@ public class TrafficManagerImpl implements TrafficManager {
         LambdaQueryWrapper<TrafficDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TrafficDO::getAccountNo,accountNo);
         queryWrapper.and(wrapper->wrapper.ge(TrafficDO::getExpiredDate,today).or().eq(TrafficDO::getOutTradeNo,"free_init"));
-
 
         return trafficMapper.selectList(queryWrapper);
     }

@@ -4,6 +4,8 @@ import com.example.shortlink.account.model.TrafficDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * Mapper 接口
@@ -34,4 +36,11 @@ public interface TrafficMapper extends BaseMapper<TrafficDO> {
      * @return
      */
     int releaseUsedTimes(@Param("accountNo") Long accountNo, @Param("trafficId") Long trafficId, @Param("usedTimes") Integer usedTimes);
+
+    /**
+     * 查找可用的短链流量包(未过期)，包括免费流量包
+     * @param accountNo
+     * @param today
+     */
+//    List<TrafficDO> selectAvailableTraffics(@Param("accountNo") Long accountNo, @Param("today") String today);
 }
