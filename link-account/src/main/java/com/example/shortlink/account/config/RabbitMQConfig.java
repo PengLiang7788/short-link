@@ -126,7 +126,7 @@ public class RabbitMQConfig {
         Map<String, Object> args = new HashMap<String, Object>(3) {{
             put("x-message-ttl", ttl);
             put("x-dead-letter-exchange", trafficEventExchange);
-            put("x-dead-letter-routing-key", trafficReleaseDelayRoutingKey);
+            put("x-dead-letter-routing-key", trafficReleaseRoutingKey);
         }};
 
         return new Queue(trafficReleaseDelayQueue, true, false, false, args);
