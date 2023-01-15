@@ -128,16 +128,16 @@ public class TrafficManagerImpl implements TrafficManager {
     }
 
     /**
-     * 恢复流量包使用当天当天次数,回滚流量包
-     *
+     * 恢复流量包使用当天当天次数
      * @param accountNo
      * @param trafficId
      * @param usedTimes
+     * @param useDateStr
      * @return
      */
     @Override
-    public int releaseUsedTimes(Long accountNo, Long trafficId, Integer usedTimes) {
-        return trafficMapper.releaseUsedTimes(accountNo, trafficId, usedTimes);
+    public int releaseUsedTimes(Long accountNo, Long trafficId, Integer usedTimes,String useDateStr) {
+        return trafficMapper.releaseUsedTimes(accountNo, trafficId, usedTimes,useDateStr);
     }
 
     /**

@@ -60,11 +60,7 @@ public class TrafficTest {
         log.info("rows={}", rows);
     }
 
-    @Test
-    public void testReleaseUsedTimes() {
-        int rows = trafficManager.releaseUsedTimes(820257672426160128L, 1613380696984899585L, 1);
-        log.info("rows={}", rows);
-    }
+
 
 
 

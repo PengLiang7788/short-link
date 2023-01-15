@@ -153,7 +153,14 @@ public class TrafficServiceImpl implements TrafficService {
 
                 if (jsonData.getCode() != 0){
                     log.error("创建短链失败，流量包回滚");
-                    trafficManager.releaseUsedTimes(accountNo,trafficTaskDO.getTrafficId(),1);
+
+                    String useDateStr = TimeUtil.format(trafficTaskDO.getGmtCreate(), "yyyy-MM-dd");
+
+                    trafficManager.releaseUsedTimes(accountNo,trafficTaskDO.getTrafficId(),1,useDateStr);
+
+                    // 恢复流量包应该删除这个key
+                    String totalTrafficTimeKey = String.format(RedisKey.DAY_TOTAL_TRAFFIC, accountNo);
+                    redisTemplate.delete(totalTrafficTimeKey);
                 }
                 // 可以更新状态，定时删除
                 trafficTaskManager.deleteByIdAndAccountNo(trafficTaskId,accountNo);

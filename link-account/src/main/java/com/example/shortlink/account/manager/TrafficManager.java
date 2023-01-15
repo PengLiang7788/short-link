@@ -65,13 +65,13 @@ public interface TrafficManager {
 
     /**
      * 恢复流量包使用当天当天次数
-     *
      * @param accountNo
      * @param trafficId
      * @param usedTimes
+     * @param useDateStr
      * @return
      */
-    int releaseUsedTimes(Long accountNo, Long trafficId, Integer usedTimes);
+    int releaseUsedTimes(Long accountNo, Long trafficId, Integer usedTimes,String useDateStr);
 
     /**
      * 批量更新流量包使用次数为0

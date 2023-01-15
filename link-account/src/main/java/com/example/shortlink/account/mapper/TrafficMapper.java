@@ -28,14 +28,16 @@ public interface TrafficMapper extends BaseMapper<TrafficDO> {
                         @Param("usedTimes") Integer usedTimes);
 
     /**
-     * 恢复流量包当天使用次数
+     * 恢复流量包使用当天当天次数
      *
      * @param accountNo
      * @param trafficId
      * @param usedTimes
+     * @param useDateStr
      * @return
      */
-    int releaseUsedTimes(@Param("accountNo") Long accountNo, @Param("trafficId") Long trafficId, @Param("usedTimes") Integer usedTimes);
+    int releaseUsedTimes(@Param("accountNo") Long accountNo, @Param("trafficId") Long trafficId,
+                         @Param("usedTimes") Integer usedTimes, @Param("useDateStr") String useDateStr);
 
     /**
      * 查找可用的短链流量包(未过期)，包括免费流量包
