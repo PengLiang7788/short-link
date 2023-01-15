@@ -93,7 +93,7 @@ public class TrafficServiceImpl implements TrafficService {
             int rows = trafficManager.add(trafficDO);
             log.info("消费消息新增流量包 rows={},{}", rows, trafficDO);
 
-            // 新增流量包因该删除这个key
+            // 新增流量包应该删除这个key
             String totalTrafficTimeKey = String.format(RedisKey.DAY_TOTAL_TRAFFIC,accountNo);
             redisTemplate.delete(totalTrafficTimeKey);
 

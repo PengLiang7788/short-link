@@ -9,6 +9,13 @@ spring:
         server-addr: 212.129.255.88:8848
         username: nacos
         password: nacos
+  datasource:
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 10
+      idle-timeout: 120000
+      connection-timeout: 300000
+      leak-detection-threshold: 300000
   # redis连接
   redis:
     client-type: jedis
@@ -94,5 +101,5 @@ pay:
     # 自定义
     private-key-path: classpath:/cert/apiclient_key.pem
     success-return-url: https://www.nit.edu.cn
-    callback-url: http://xgfsfk.natappfree.cc/api/callback/order/v1/wechat
+    callback-url: http://if5jc5.natappfree.cc/api/callback/order/v1/wechat
 

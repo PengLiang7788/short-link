@@ -9,6 +9,13 @@ spring:
         server-addr: 212.129.255.88:8848
         username: nacos
         password: nacos
+  datasource:
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 10
+      idle-timeout: 120000
+      connection-timeout: 300000
+      leak-detection-threshold: 300000
   redis:
     client-type: jedis
     host: 212.129.255.88
