@@ -53,6 +53,11 @@ public class LinkApiController {
             if (isLetterDigit(shortLinkCode)) {
                 // 查找短链
                 ShortLinkVo shortLinkVo = shortLinkService.parseShortLinkCode(shortLinkCode);
+
+                if (shortLinkVo != null) {
+                    logService.recordShortLinkLog(request, shortLinkCode, shortLinkVo.getAccountNo());
+                }
+
                 // 判断是否过期和可用
                 if (isVisitable(shortLinkVo)) {
                     String originalUrl = CommonUtil.removeUrlPrefix(shortLinkVo.getOriginalUrl());

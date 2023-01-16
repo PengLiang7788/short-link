@@ -143,6 +143,13 @@ spring:
           # 重试消息的时间间隔 5秒
           initial-interval: 5000
 
+  #kafka配置
+  kafka:
+    bootstrap-servers: 212.129.255.88:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
 # 用于rpc调用token验证
 rpc:
   token: pl1008666.
