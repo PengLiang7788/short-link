@@ -2,6 +2,7 @@ package com.example.shortlink.link.controller;
 
 import com.example.shortlink.common.enums.ShortLinkStateEnum;
 import com.example.shortlink.common.util.CommonUtil;
+import com.example.shortlink.link.service.LogService;
 import com.example.shortlink.link.service.ShortLinkService;
 import com.example.shortlink.link.vo.ShortLinkVo;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,9 @@ public class LinkApiController {
     @Autowired
     private ShortLinkService shortLinkService;
 
+    @Autowired
+    private LogService logService;
+
     /**
      * 根据短链码解析出原始网址
      * <p>
@@ -42,6 +46,7 @@ public class LinkApiController {
     @GetMapping(path = "/{shortLinkCode}")
     public void dispatch(@PathVariable("shortLinkCode") String shortLinkCode,
                          HttpServletRequest request, HttpServletResponse response) {
+
         try {
             log.info("短链码:{}", shortLinkCode);
             // 判断短链码是否合规
