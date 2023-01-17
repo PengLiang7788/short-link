@@ -145,7 +145,8 @@ public class DeviceUtil {
         String manufacture = operatingSystem.getManufacturer().toString();
         String deviceType = operatingSystem.getDeviceType().toString();
 
-        DeviceInfoDo deviceInfoDo = DeviceInfoDo.builder().browserName(browserName)
+        DeviceInfoDo deviceInfoDo = DeviceInfoDo.builder()
+                .browserName(browserName)
                 .deviceManufacturer(manufacture)
                 .deviceType(deviceType)
                 .os(os)

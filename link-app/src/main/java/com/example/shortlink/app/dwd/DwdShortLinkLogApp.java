@@ -10,9 +10,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
 
@@ -48,11 +50,11 @@ public class DwdShortLinkLogApp {
 
         env.setParallelism(1);
 
-        DataStream<String> ds =  env.socketTextStream("192.168.200.140",8888);
+//        DataStream<String> ds =  env.socketTextStream("192.168.200.140",8888);
 
-//        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
+        FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
 
-//        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
+        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
 
         ds.print();
 

@@ -52,6 +52,8 @@ public class DwmShortLinkWideApp {
                 // 解析设备对象
                 DeviceInfoDo deviceInfo = DeviceUtil.getDeviceInfo(userAgent);
 
+                String udid = jsonObject.getString("udid");
+                deviceInfo.setUdid(udid);
                 // 配置短链基本信息宽表
                 ShortLinkWideDo shortLinkWideDo = ShortLinkWideDo.builder()
                         // 短链基本信息补齐
