@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.shortlink.app.util.DeviceUtil;
 import com.example.shortlink.app.util.KafkaUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -12,6 +13,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
 
+import java.net.URL;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -44,6 +46,7 @@ public class DwdShortLinkLogApp {
 
         ds.print();
 
+        // 数据补齐
         SingleOutputStreamOperator<JSONObject> jsonDS = ds.flatMap(new FlatMapFunction<String, JSONObject>() {
             @Override
             public void flatMap(String value, Collector<JSONObject> out) throws Exception {
@@ -51,12 +54,38 @@ public class DwdShortLinkLogApp {
                 // 生成设备唯一id
                 String udid = getDeviceId(jsonObject);
                 jsonObject.put("udid", udid);
+                String referer = getReferer(jsonObject);
+                jsonObject.put("referer",referer);
+
                 out.collect(jsonObject);
             }
         });
-
         env.execute();
+    }
 
+    /**
+     * 提取referer
+     *
+     * @param jsonObject
+     * @return
+     */
+    public static String getReferer(JSONObject jsonObject) {
+
+        JSONObject dataJsonObj = jsonObject.getJSONObject("data");
+        if (dataJsonObj.containsKey("referer")){
+
+            String referer = dataJsonObj.getString("referer");
+            if (StringUtils.isNotBlank(referer)){
+                try{
+                    URL url = new URL(referer);
+                    return url.getHost();
+                }catch (Exception e){
+                    log.error("提取referer失败:{}",e);
+                }
+            }
+        }
+
+        return "";
     }
 
     /**
