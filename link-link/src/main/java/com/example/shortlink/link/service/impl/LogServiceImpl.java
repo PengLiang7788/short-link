@@ -37,7 +37,7 @@ public class LogServiceImpl implements LogService {
         Map<String, String> headerMap = CommonUtil.getAllRequestHeader(request);
 
         Map<String, String> availableMap = new HashMap<String, String>() {{
-            put("user-Agent", headerMap.get("user-Agent"));
+            put("user-agent", headerMap.get("user-agent"));
             put("referer", headerMap.get("referer"));
             put("accountNo", accountNo.toString());
         }};

@@ -31,7 +31,7 @@ public class KafkaUtil {
             properties.load(is);
 
         } catch (IOException e) {
-            log.error("加载kafka配置文件失败");
+            log.error("加载kafka配置文件失败:{}",e);
         }
 
         //获取key配置对应的value
