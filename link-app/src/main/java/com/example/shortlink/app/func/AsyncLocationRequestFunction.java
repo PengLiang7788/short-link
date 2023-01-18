@@ -50,6 +50,11 @@ public class AsyncLocationRequestFunction extends RichAsyncFunction<ShortLinkWid
     }
 
     @Override
+    public void timeout(ShortLinkWideDo input, ResultFuture<String> resultFuture) throws Exception {
+        resultFuture.complete(null);
+    }
+
+    @Override
     public void asyncInvoke(ShortLinkWideDo shortLinkWideDo, ResultFuture<String> resultFuture) throws Exception {
 
         String ip = shortLinkWideDo.getIp();
