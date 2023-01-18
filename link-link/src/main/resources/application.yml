@@ -11,12 +11,12 @@ spring:
         password: nacos
   datasource:
     hikari:
-      minimum-idle: 2
-      maximum-pool-size: 10
-      idle-timeout: 120000
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 600000
       connection-timeout: 300000
-      leak-detection-threshold: 300000
-      max-lifetime: 1740000
+      max-lifetime: 1800000
+      auto-commit: true
   redis:
     client-type: jedis
     host: 212.129.255.88
