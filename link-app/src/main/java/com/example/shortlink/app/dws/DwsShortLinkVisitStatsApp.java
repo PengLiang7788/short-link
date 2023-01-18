@@ -120,8 +120,8 @@ public class DwsShortLinkVisitStatsApp {
 
                 for (ShortLinkVisitStatsDo visitStatsDo : elements) {
                     // 窗口开始和结束时间
-                    String startTime = TimeUtil.format(context.window().getStart());
-                    String endTime = TimeUtil.format(context.window().getEnd());
+                    String startTime = TimeUtil.formatWithTime(context.window().getStart());
+                    String endTime = TimeUtil.formatWithTime(context.window().getEnd());
                     visitStatsDo.setStartTime(startTime);
                     visitStatsDo.setStartTime(endTime);
 
