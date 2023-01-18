@@ -1,6 +1,8 @@
 package com.example.shortlink.app.dwm;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.shortlink.app.func.DeviceMapFunction;
+import com.example.shortlink.app.func.LocationMapFunction;
 import com.example.shortlink.app.model.DeviceInfoDo;
 import com.example.shortlink.app.model.ShortLinkWideDo;
 import com.example.shortlink.app.util.DeviceUtil;
@@ -11,6 +13,7 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
 
 /**
@@ -29,6 +32,11 @@ public class DwmShortLinkWideApp {
      */
     private static final String GROUP_ID = "dwm_short_link_group";
 
+    /**
+     * 定义输出
+     */
+    public static final String SINK_TOPIC = "dwm_link_visit_topic";
+
     public static void main(String[] args) throws Exception {
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -37,48 +45,24 @@ public class DwmShortLinkWideApp {
 
 //        DataStream<String> ds = env.socketTextStream("192.168.200.140", 8888);
 
+        // 获取流
         FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
 
         DataStreamSource<String> ds = env.addSource(kafkaConsumer);
 
         // 格式转换，补齐设备信息
-        SingleOutputStreamOperator<ShortLinkWideDo> deviceWideDS = ds.flatMap(new FlatMapFunction<String, ShortLinkWideDo>() {
-            @Override
-            public void flatMap(String value, Collector<ShortLinkWideDo> out) throws Exception {
-                // 还原json对象
-                JSONObject jsonObject = JSONObject.parseObject(value);
-                // 获取ua
-                String userAgent = jsonObject.getJSONObject("data").getString("user-agent");
-                // 解析设备对象
-                DeviceInfoDo deviceInfo = DeviceUtil.getDeviceInfo(userAgent);
-
-                String udid = jsonObject.getString("udid");
-                deviceInfo.setUdid(udid);
-                // 配置短链基本信息宽表
-                ShortLinkWideDo shortLinkWideDo = ShortLinkWideDo.builder()
-                        // 短链基本信息补齐
-                        .accountNo(jsonObject.getJSONObject("data").getLong("accountNo"))
-                        .visitTime(jsonObject.getLong("ts"))
-                        .code(jsonObject.getString("bizId"))
-                        .referer(jsonObject.getString("referer"))
-                        .isNew(jsonObject.getInteger("is_new"))
-                        .ip(jsonObject.getString("ip"))
-                        // 设备信息补齐
-                        .browserName(deviceInfo.getBrowserName())
-                        .os(deviceInfo.getOs())
-                        .osVersion(deviceInfo.getOsVersion())
-                        .deviceType(deviceInfo.getDeviceType())
-                        .deviceManufacturer(deviceInfo.getDeviceManufacturer())
-                        .udid(deviceInfo.getUdid())
-
-                        .build();
-
-                out.collect(shortLinkWideDo);
-
-            }
-        });
+        SingleOutputStreamOperator<ShortLinkWideDo> deviceWideDS = ds.map(new DeviceMapFunction());
 
         deviceWideDS.print("设备信息宽表补齐");
+
+        // 补齐地理位置信息
+        SingleOutputStreamOperator<String> shortLinkWideDs = deviceWideDS.map(new LocationMapFunction());
+        shortLinkWideDs.print("地理位置信息宽表补齐");
+
+        FlinkKafkaProducer<String> kafkaProducer = KafkaUtil.getKafkaProducer(SINK_TOPIC);
+
+        // 将sink写到dwm层，kafka存储
+        shortLinkWideDs.addSink(kafkaProducer);
 
         env.execute();
 
