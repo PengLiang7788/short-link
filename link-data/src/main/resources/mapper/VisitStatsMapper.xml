@@ -106,5 +106,14 @@
         order by date_time_str desc
     </select>
 
+    <!--高频referer统计-->
+    <select id="queryFrequentSource" resultMap="BaseResultMap">
+        select referer, sum(pv) pv_count
+        from visit_stats
+        where account_no = #{accountNo}
+          and code = #{code}
+          and toYYYYMMDD(start_time) BETWEEN #{startTime} AND #{endTime} desc limit #{size}
+    </select>
+
 
 </mapper>

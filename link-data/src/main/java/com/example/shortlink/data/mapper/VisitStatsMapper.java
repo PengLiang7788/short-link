@@ -79,4 +79,17 @@ public interface VisitStatsMapper extends BaseMapper<VisitStatsDo> {
      */
     List<VisitStatsDo> queryVisitTrendWithMultiMinute(@Param("code") String code, @Param("accountNo") long accountNo,
                                                       @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    /**
+     * 高频referer统计
+     *
+     * @param code
+     * @param accountNo
+     * @param startTime
+     * @param endTime
+     * @param size
+     * @return
+     */
+    List<VisitStatsDo> queryFrequentSource(@Param("code") String code, @Param("accountNo") long accountNo,
+                                           @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("size") int size);
 }

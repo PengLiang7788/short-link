@@ -2,6 +2,7 @@ package com.example.shortlink.data.controller;
 
 import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.util.JsonData;
+import com.example.shortlink.data.controller.request.FrequentSourceRequest;
 import com.example.shortlink.data.controller.request.RegionQueryRequest;
 import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
 import com.example.shortlink.data.controller.request.VisitTrendRequest;
@@ -71,6 +72,19 @@ public class VisitStatsController {
     @PostMapping("/trend")
     public JsonData queryVisitTrend(@RequestBody VisitTrendRequest request) {
         List<VisitTrendVo> list = visitStatsService.queryVisitTrend(request);
+
+        return JsonData.buildSuccess(list);
+    }
+
+    /**
+     * 高频referer统计
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/frequent_source")
+    public JsonData queryFrequentSource(@RequestBody FrequentSourceRequest request) {
+        List<VisitStatsVo> list = visitStatsService.queryFrequentSource(request);
 
         return JsonData.buildSuccess(list);
     }

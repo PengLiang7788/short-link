@@ -2,6 +2,7 @@ package com.example.shortlink.data.service.impl;
 
 import com.example.shortlink.common.enums.DateTimeFieldEnum;
 import com.example.shortlink.common.interceptor.LoginInterceptor;
+import com.example.shortlink.data.controller.request.FrequentSourceRequest;
 import com.example.shortlink.data.controller.request.RegionQueryRequest;
 import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
 import com.example.shortlink.data.controller.request.VisitTrendRequest;
@@ -128,6 +129,31 @@ public class VisitStatsServiceImpl implements VisitStatsService {
             VisitTrendVo visitTrendVo = new VisitTrendVo();
             BeanUtils.copyProperties(item, visitTrendVo);
             return visitTrendVo;
+        }).collect(Collectors.toList());
+
+        return result;
+    }
+
+    /**
+     * 高频referer统计
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public List<VisitStatsVo> queryFrequentSource(FrequentSourceRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+
+        String code = request.getCode();
+        String startTime = request.getStartTime();
+        String endTime = request.getEndTime();
+
+        List<VisitStatsDo> list = visitStatsMapper.queryFrequentSource(code, accountNo, startTime, endTime, 10);
+
+        List<VisitStatsVo> result = list.stream().map(item -> {
+            VisitStatsVo visitStatsVo = new VisitStatsVo();
+            BeanUtils.copyProperties(item, visitStatsVo);
+            return visitStatsVo;
         }).collect(Collectors.toList());
 
         return result;

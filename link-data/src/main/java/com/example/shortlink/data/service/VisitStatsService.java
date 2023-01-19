@@ -1,5 +1,6 @@
 package com.example.shortlink.data.service;
 
+import com.example.shortlink.data.controller.request.FrequentSourceRequest;
 import com.example.shortlink.data.controller.request.RegionQueryRequest;
 import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
 import com.example.shortlink.data.controller.request.VisitTrendRequest;
@@ -37,4 +38,12 @@ public interface VisitStatsService {
      * @return
      */
     List<VisitTrendVo> queryVisitTrend(VisitTrendRequest request);
+
+    /**
+     * 高频referer统计
+     * @param request
+     * @return
+     */
+    List<VisitStatsVo> queryFrequentSource(FrequentSourceRequest request);
+
 }
