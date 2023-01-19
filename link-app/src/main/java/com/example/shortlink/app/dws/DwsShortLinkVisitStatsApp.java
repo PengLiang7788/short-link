@@ -124,7 +124,7 @@ public class DwsShortLinkVisitStatsApp {
                     String startTime = TimeUtil.formatWithTime(context.window().getStart());
                     String endTime = TimeUtil.formatWithTime(context.window().getEnd());
                     visitStatsDo.setStartTime(startTime);
-                    visitStatsDo.setStartTime(endTime);
+                    visitStatsDo.setEndTime(endTime);
 
                     out.collect(visitStatsDo);
                 }

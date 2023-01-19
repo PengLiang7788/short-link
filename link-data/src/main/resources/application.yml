@@ -1,0 +1,22 @@
+server:
+  port: 8002
+spring:
+  application:
+    name: link-data
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 212.129.255.88:8848
+        username: nacos
+        password: nacos
+  datasource:
+    driver-class-name: ru.yandex.clickhouse.ClickHouseDriver
+    url: jdbc:clickhouse://212.129.255.88:8123/default
+
+# 配置mybatis-plus打印sql
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  level:
+    root: info
