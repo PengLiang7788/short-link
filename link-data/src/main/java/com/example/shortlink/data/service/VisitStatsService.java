@@ -1,9 +1,6 @@
 package com.example.shortlink.data.service;
 
-import com.example.shortlink.data.controller.request.FrequentSourceRequest;
-import com.example.shortlink.data.controller.request.RegionQueryRequest;
-import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
-import com.example.shortlink.data.controller.request.VisitTrendRequest;
+import com.example.shortlink.data.controller.request.*;
 import com.example.shortlink.data.vo.VisitStatsVo;
 import com.example.shortlink.data.vo.VisitTrendVo;
 
@@ -34,6 +31,7 @@ public interface VisitStatsService {
 
     /**
      * 访问趋势图
+     *
      * @param request
      * @return
      */
@@ -41,9 +39,17 @@ public interface VisitStatsService {
 
     /**
      * 高频referer统计
+     *
      * @param request
      * @return
      */
     List<VisitStatsVo> queryFrequentSource(FrequentSourceRequest request);
 
+    /**
+     * 查询设备访问分布情况
+     *
+     * @param request
+     * @return
+     */
+    Map<String, List<VisitStatsVo>> queryDeviceInfo(QueryDeviceRequest request);
 }

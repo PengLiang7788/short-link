@@ -1,11 +1,9 @@
 package com.example.shortlink.data.service.impl;
 
 import com.example.shortlink.common.enums.DateTimeFieldEnum;
+import com.example.shortlink.common.enums.QueryDeviceEnum;
 import com.example.shortlink.common.interceptor.LoginInterceptor;
-import com.example.shortlink.data.controller.request.FrequentSourceRequest;
-import com.example.shortlink.data.controller.request.RegionQueryRequest;
-import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
-import com.example.shortlink.data.controller.request.VisitTrendRequest;
+import com.example.shortlink.data.controller.request.*;
 import com.example.shortlink.data.mapper.VisitStatsMapper;
 import com.example.shortlink.data.model.VisitStatsDo;
 import com.example.shortlink.data.service.VisitStatsService;
@@ -157,5 +155,46 @@ public class VisitStatsServiceImpl implements VisitStatsService {
         }).collect(Collectors.toList());
 
         return result;
+    }
+
+    /**
+     * 查询设备访问分布情况
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public Map<String, List<VisitStatsVo>> queryDeviceInfo(QueryDeviceRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+
+        String code = request.getCode();
+        String startTime = request.getStartTime();
+        String endTime = request.getEndTime();
+
+        String os = QueryDeviceEnum.OS.name().toLowerCase();
+        String browser = QueryDeviceEnum.BROWSER.name().toLowerCase();
+        String device = QueryDeviceEnum.DEVICE.name().toLowerCase();
+
+        List<VisitStatsDo> osList = visitStatsMapper.queryDeviceInfo(code, accountNo, startTime, endTime, os);
+        List<VisitStatsDo> browserList = visitStatsMapper.queryDeviceInfo(code, accountNo, startTime, endTime, browser);
+        List<VisitStatsDo> deviceList = visitStatsMapper.queryDeviceInfo(code, accountNo, startTime, endTime, device);
+
+        List<VisitStatsVo> osVisitStatsList = osList.stream().map(item -> beanProcess(item)).collect(Collectors.toList());
+        List<VisitStatsVo> browserVisitStatsList = browserList.stream().map(item -> beanProcess(item)).collect(Collectors.toList());
+        List<VisitStatsVo> deviceVisitStatsList = deviceList.stream().map(item -> beanProcess(item)).collect(Collectors.toList());
+
+        Map<String, List<VisitStatsVo>> map = new HashMap<>();
+        map.put("os", osVisitStatsList);
+        map.put("browser", browserVisitStatsList);
+        map.put("device", deviceVisitStatsList);
+
+        return map;
+    }
+
+    private VisitStatsVo beanProcess(VisitStatsDo visitStatsDo) {
+        VisitStatsVo visitStatsVo = new VisitStatsVo();
+        BeanUtils.copyProperties(visitStatsDo, visitStatsVo);
+
+        return visitStatsVo;
     }
 }

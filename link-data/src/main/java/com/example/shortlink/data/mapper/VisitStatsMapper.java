@@ -92,4 +92,18 @@ public interface VisitStatsMapper extends BaseMapper<VisitStatsDo> {
      */
     List<VisitStatsDo> queryFrequentSource(@Param("code") String code, @Param("accountNo") long accountNo,
                                            @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("size") int size);
+
+
+    /**
+     * 查询设备类型
+     *
+     * @param code
+     * @param accountNo
+     * @param startTime
+     * @param endTime
+     * @param field
+     * @return
+     */
+    List<VisitStatsDo> queryDeviceInfo(@Param("code") String code, @Param("accountNo") long accountNo,
+                                       @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("field") String field);
 }

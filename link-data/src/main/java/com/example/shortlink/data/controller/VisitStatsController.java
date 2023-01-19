@@ -2,10 +2,7 @@ package com.example.shortlink.data.controller;
 
 import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.util.JsonData;
-import com.example.shortlink.data.controller.request.FrequentSourceRequest;
-import com.example.shortlink.data.controller.request.RegionQueryRequest;
-import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
-import com.example.shortlink.data.controller.request.VisitTrendRequest;
+import com.example.shortlink.data.controller.request.*;
 import com.example.shortlink.data.model.VisitStatsDo;
 import com.example.shortlink.data.service.VisitStatsService;
 import com.example.shortlink.data.vo.VisitStatsVo;
@@ -87,6 +84,19 @@ public class VisitStatsController {
         List<VisitStatsVo> list = visitStatsService.queryFrequentSource(request);
 
         return JsonData.buildSuccess(list);
+    }
+
+    /**
+     * 查询设备访问分布情况
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/device_info")
+    public JsonData queryDeviceInfo(@RequestBody QueryDeviceRequest request) {
+        Map<String, List<VisitStatsVo>> map = visitStatsService.queryDeviceInfo(request);
+
+        return JsonData.buildSuccess(map);
     }
 
 
