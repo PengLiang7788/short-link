@@ -164,6 +164,7 @@ public class DwsShortLinkVisitStatsApp {
                 .os(jsonObj.getString("os"))
                 .osVersion(jsonObj.getString("osVersion"))
                 .deviceType(jsonObj.getString("deviceType"))
+                .deviceManufacturer(jsonObj.getString("deviceManufacturer"))
 
                 .build();
 

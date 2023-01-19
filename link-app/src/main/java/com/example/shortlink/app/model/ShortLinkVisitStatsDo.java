@@ -18,12 +18,12 @@ public class ShortLinkVisitStatsDo {
     /**
      * 窗口开始时间  Clickhouse里面会用到
      */
-    String startTime;
+    private String startTime;
 
     /**
      * 窗口结束时间
      */
-    String endTime;
+    private String endTime;
 
     /**
      * 短链压缩码
@@ -107,8 +107,8 @@ public class ShortLinkVisitStatsDo {
 
 //==============度量==================
 
-    private Long uv=0L;
+    private Long uv = 0L;
 
-    private Long pv=0L;
+    private Long pv = 0L;
 
 }
