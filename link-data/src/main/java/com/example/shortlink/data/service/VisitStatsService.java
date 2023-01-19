@@ -4,6 +4,7 @@ import com.example.shortlink.data.controller.request.RegionQueryRequest;
 import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
 import com.example.shortlink.data.controller.request.VisitTrendRequest;
 import com.example.shortlink.data.vo.VisitStatsVo;
+import com.example.shortlink.data.vo.VisitTrendVo;
 
 import java.util.List;
 import java.util.Map;
@@ -35,5 +36,5 @@ public interface VisitStatsService {
      * @param request
      * @return
      */
-    List<VisitStatsVo> queryVisitTrend(VisitTrendRequest request);
+    List<VisitTrendVo> queryVisitTrend(VisitTrendRequest request);
 }

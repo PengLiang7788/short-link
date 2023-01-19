@@ -8,6 +8,7 @@ import com.example.shortlink.data.controller.request.VisitTrendRequest;
 import com.example.shortlink.data.model.VisitStatsDo;
 import com.example.shortlink.data.service.VisitStatsService;
 import com.example.shortlink.data.vo.VisitStatsVo;
+import com.example.shortlink.data.vo.VisitTrendVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,7 +70,7 @@ public class VisitStatsController {
      */
     @PostMapping("/trend")
     public JsonData queryVisitTrend(@RequestBody VisitTrendRequest request) {
-        List<VisitStatsVo> list = visitStatsService.queryVisitTrend(request);
+        List<VisitTrendVo> list = visitStatsService.queryVisitTrend(request);
 
         return JsonData.buildSuccess(list);
     }

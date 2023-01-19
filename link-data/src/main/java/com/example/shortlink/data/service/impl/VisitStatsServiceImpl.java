@@ -9,6 +9,7 @@ import com.example.shortlink.data.mapper.VisitStatsMapper;
 import com.example.shortlink.data.model.VisitStatsDo;
 import com.example.shortlink.data.service.VisitStatsService;
 import com.example.shortlink.data.vo.VisitStatsVo;
+import com.example.shortlink.data.vo.VisitTrendVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.security.auth.Login;
 import org.springframework.beans.BeanUtils;
@@ -106,7 +107,7 @@ public class VisitStatsServiceImpl implements VisitStatsService {
      * @return
      */
     @Override
-    public List<VisitStatsVo> queryVisitTrend(VisitTrendRequest request) {
+    public List<VisitTrendVo> queryVisitTrend(VisitTrendRequest request) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
 
         String code = request.getCode();
@@ -125,10 +126,10 @@ public class VisitStatsServiceImpl implements VisitStatsService {
 
         }
 
-        List<VisitStatsVo> result = list.stream().map(item -> {
-            VisitStatsVo visitStatsVo = new VisitStatsVo();
-            BeanUtils.copyProperties(item, visitStatsVo);
-            return visitStatsVo;
+        List<VisitTrendVo> result = list.stream().map(item -> {
+            VisitTrendVo visitTrendVo = new VisitTrendVo();
+            BeanUtils.copyProperties(item, visitTrendVo);
+            return visitTrendVo;
         }).collect(Collectors.toList());
 
         return result;
