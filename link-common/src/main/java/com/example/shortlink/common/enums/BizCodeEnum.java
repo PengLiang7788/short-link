@@ -91,7 +91,17 @@ public enum BizCodeEnum {
     /**
      * MQ消费异常
      */
-    MQ_CONSUME_EXCEPTION(900101, "MQ消费异常");
+    MQ_CONSUME_EXCEPTION(900101, "MQ消费异常"),
+
+    /**
+     * 数据查询总条数超过限制
+     */
+    DATA_OUT_OF_LIMIT_SIZE(400001,"查询条数超过限制"),
+
+    /**
+     * 数据查询超过最大跨度
+     */
+    DATA_OUT_OF_LIMIT_DATE(400002,"日期查询超过跨度");
 
     @Getter
     private String message;

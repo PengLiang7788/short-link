@@ -8,6 +8,7 @@
         <result column="referer" property="referer"/>
         <result column="is_new" property="isNew"/>
         <result column="account_no" property="accountNo"/>
+        <result column="ts" property="visitTime"/>
 
         <result column="province" property="province"/>
         <result column="city" property="city"/>
@@ -29,8 +30,23 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        code,referer,is_new,account_no,province,city,ip,browser_name,os,device_type,start_time
+        code,referer,ts,is_new,account_no,province,city,ip,browser_name,os,device_type,start_time
     </sql>
+
+    <!--计算总条数-->
+    <select id="countTotal" resultType="java.lang.Integer">
+        select COUNT(1)
+        from visit_stats
+        where account_no = #{accountNo}
+          and code = #{code} limit 1000
+    </select>
+
+    <select id="pageVisitRecord" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from visit_stats where account_no = #{accountNo}
+        and code = #{code} order by ts desc limit #{from}, #{size}
+    </select>
 
 
 </mapper>

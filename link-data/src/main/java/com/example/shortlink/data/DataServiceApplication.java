@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author 彭亮
  * @create 2023-01-19 13:52
  */
-@MapperScan("com.example.shortlink.account.mapper")
+@MapperScan("com.example.shortlink.data.mapper")
 @EnableTransactionManagement
 @EnableFeignClients
 @EnableDiscoveryClient

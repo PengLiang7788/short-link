@@ -12,6 +12,8 @@ spring:
   datasource:
     driver-class-name: ru.yandex.clickhouse.ClickHouseDriver
     url: jdbc:clickhouse://212.129.255.88:8123/default
+    username: default
+    password: pl1008666.
 
   redis:
     client-type: jedis
