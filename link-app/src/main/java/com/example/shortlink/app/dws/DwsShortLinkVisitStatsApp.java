@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.shortlink.app.model.ShortLinkVisitStatsDo;
 import com.example.shortlink.app.util.KafkaUtil;
+import com.example.shortlink.app.util.MyClickHouseSink;
 import com.example.shortlink.app.util.TimeUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -133,6 +134,9 @@ public class DwsShortLinkVisitStatsApp {
         reduceDS.print();
 
         //8、输出到ClickHouse
+        String sql = "insert into visit_stats values(?,?,?,? ,?,?,?,? ,?,?,?,? ,?,?,?)";
+
+        reduceDS.addSink(MyClickHouseSink.getJdbcSink(sql));
 
         env.execute();
     }
