@@ -1,13 +1,16 @@
 package com.example.shortlink.data.service.impl;
 
+import com.example.shortlink.common.enums.DateTimeFieldEnum;
 import com.example.shortlink.common.interceptor.LoginInterceptor;
 import com.example.shortlink.data.controller.request.RegionQueryRequest;
 import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
+import com.example.shortlink.data.controller.request.VisitTrendRequest;
 import com.example.shortlink.data.mapper.VisitStatsMapper;
 import com.example.shortlink.data.model.VisitStatsDo;
 import com.example.shortlink.data.service.VisitStatsService;
 import com.example.shortlink.data.vo.VisitStatsVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.security.auth.Login;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,6 +89,41 @@ public class VisitStatsServiceImpl implements VisitStatsService {
 
         List<VisitStatsDo> list = visitStatsMapper
                 .queryRegionVisitStartsWithDay(request.getCode(), request.getStartTime(), request.getEndTime(), accountNo);
+
+        List<VisitStatsVo> result = list.stream().map(item -> {
+            VisitStatsVo visitStatsVo = new VisitStatsVo();
+            BeanUtils.copyProperties(item, visitStatsVo);
+            return visitStatsVo;
+        }).collect(Collectors.toList());
+
+        return result;
+    }
+
+    /**
+     * 访问趋势图
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public List<VisitStatsVo> queryVisitTrend(VisitTrendRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+
+        String code = request.getCode();
+        String type = request.getType();
+        String startTime = request.getStartTime();
+        String endTime = request.getEndTime();
+        List<VisitStatsDo> list = null;
+        if (DateTimeFieldEnum.DAY.name().equalsIgnoreCase(type)) {
+            list = visitStatsMapper.queryVisitTrendWithDay(code, accountNo, startTime, endTime);
+
+        } else if (DateTimeFieldEnum.HOUR.name().equalsIgnoreCase(type)) {
+
+        } else if (DateTimeFieldEnum.MINUTE.name().equalsIgnoreCase(type)) {
+
+        } else if (DateTimeFieldEnum.WEEK.name().equalsIgnoreCase(type)) {
+
+        }
 
         List<VisitStatsVo> result = list.stream().map(item -> {
             VisitStatsVo visitStatsVo = new VisitStatsVo();

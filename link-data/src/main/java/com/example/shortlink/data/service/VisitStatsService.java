@@ -2,6 +2,7 @@ package com.example.shortlink.data.service;
 
 import com.example.shortlink.data.controller.request.RegionQueryRequest;
 import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
+import com.example.shortlink.data.controller.request.VisitTrendRequest;
 import com.example.shortlink.data.vo.VisitStatsVo;
 
 import java.util.List;
@@ -29,4 +30,10 @@ public interface VisitStatsService {
      */
     List<VisitStatsVo> queryRegionWithDay(RegionQueryRequest request);
 
+    /**
+     * 访问趋势图
+     * @param request
+     * @return
+     */
+    List<VisitStatsVo> queryVisitTrend(VisitTrendRequest request);
 }

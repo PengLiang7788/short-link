@@ -4,6 +4,7 @@ import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.util.JsonData;
 import com.example.shortlink.data.controller.request.RegionQueryRequest;
 import com.example.shortlink.data.controller.request.VisitRecordPageRequest;
+import com.example.shortlink.data.controller.request.VisitTrendRequest;
 import com.example.shortlink.data.model.VisitStatsDo;
 import com.example.shortlink.data.service.VisitStatsService;
 import com.example.shortlink.data.vo.VisitStatsVo;
@@ -56,6 +57,19 @@ public class VisitStatsController {
     @PostMapping("/region_day")
     public JsonData queryRegionWithDay(@RequestBody RegionQueryRequest request) {
         List<VisitStatsVo> list = visitStatsService.queryRegionWithDay(request);
+
+        return JsonData.buildSuccess(list);
+    }
+
+    /**
+     * 访问趋势图
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/trend")
+    public JsonData queryVisitTrend(@RequestBody VisitTrendRequest request) {
+        List<VisitStatsVo> list = visitStatsService.queryVisitTrend(request);
 
         return JsonData.buildSuccess(list);
     }
