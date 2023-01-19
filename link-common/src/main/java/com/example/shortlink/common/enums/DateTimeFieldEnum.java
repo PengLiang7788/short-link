@@ -10,8 +10,6 @@ public enum DateTimeFieldEnum {
 
     HOUR,
 
-    DAY,
-
-    WEEK;
+    DAY;
 
 }

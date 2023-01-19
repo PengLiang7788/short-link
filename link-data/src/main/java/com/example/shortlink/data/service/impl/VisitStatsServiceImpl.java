@@ -116,14 +116,12 @@ public class VisitStatsServiceImpl implements VisitStatsService {
         String endTime = request.getEndTime();
         List<VisitStatsDo> list = null;
         if (DateTimeFieldEnum.DAY.name().equalsIgnoreCase(type)) {
-            list = visitStatsMapper.queryVisitTrendWithDay(code, accountNo, startTime, endTime);
+            list = visitStatsMapper.queryVisitTrendWithMultiDay(code, accountNo, startTime, endTime);
 
         } else if (DateTimeFieldEnum.HOUR.name().equalsIgnoreCase(type)) {
-
+            list = visitStatsMapper.queryVisitTrendWithMultiHour(code, accountNo, startTime);
         } else if (DateTimeFieldEnum.MINUTE.name().equalsIgnoreCase(type)) {
-
-        } else if (DateTimeFieldEnum.WEEK.name().equalsIgnoreCase(type)) {
-
+            list = visitStatsMapper.queryVisitTrendWithMultiMinute(code, accountNo, startTime, endTime);
         }
 
         List<VisitTrendVo> result = list.stream().map(item -> {

@@ -51,7 +51,7 @@
     </select>
 
     <!--根据时间范围查询地区访问分布-->
-    <select id="queryRegionVisitStartsWithDay" resultMap="BaseResultMap">
+    <select id="queryVisitTrendWithMultiDay" resultMap="BaseResultMap">
         select province, city, sum(pv) pv_count, sum(uv) uv_count, count(DISTINCT ip) ip_count
         from visit_stats
         where account_no = #{accountNo}
@@ -61,7 +61,8 @@
         order by pv_count desc
     </select>
 
-    <select id="queryVisitTrendWithDay" resultMap="BaseResultMap">
+    <!--按天查询访问趋势图-->
+    <select id="queryRegionVisitStartsWithDay" resultMap="BaseResultMap">
         select toYYYYMMDD(start_time)                   date_time_str,
                sum(if(is_new = '1', visit_stats.uv, 0)) new_uv_count,
                sum(visit_stats.uv)                      uv_count,
@@ -72,7 +73,37 @@
           and code = #{code}
           and toYYYYMMDD(start_time) BETWEEN #{startTime} AND #{endTime}
         group by date_time_str
-        order by desc
+        order by date_time_str desc
+    </select>
+
+    <!--按小时查询访问趋势图-->
+    <select id="queryVisitTrendWithMultiHour" resultMap="BaseResultMap">
+        select toHour(start_time)                       date_time_str,
+               sum(if(is_new = '1', visit_stats.uv, 0)) new_uv_count,
+               sum(visit_stats.uv)                      uv_count,
+               sum(visit_stats.pv)                      pv_count,
+               count(distinct ip)                       ip_count
+        from visit_stats
+        where account_no = #{accountNo}
+          and code = #{code}
+          and toYYYYMMDD(start_time) = #{startTime}
+        group by date_time_str
+        order by date_time_str desc
+    </select>
+
+    <!--小时内的访问曲线，每分钟，如果要每五分钟，则把toMinute改为toStartofFiveMinute-->
+    <select id="queryVisitTrendWithMultiMinute" resultMap="BaseResultMap">
+        select toMinute(start_time)                     date_time_str,
+               sum(if(is_new = '1', visit_stats.uv, 0)) new_uv_count,
+               sum(visit_stats.uv)                      uv_count,
+               sum(visit_stats.pv)                      pv_count,
+               count(distinct ip)                       ip_count
+        from visit_stats
+        where account_no = #{accountNo}
+          and code = #{code}
+          and toYYYYMMDDhhmmss(start_time) BETWEEN #{startTime} AND #{endTime}
+        group by date_time_str
+        order by date_time_str desc
     </select>
 
 

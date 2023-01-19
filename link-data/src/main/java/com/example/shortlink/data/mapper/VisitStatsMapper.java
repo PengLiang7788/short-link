@@ -2,7 +2,6 @@ package com.example.shortlink.data.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.shortlink.data.model.VisitStatsDo;
-import com.example.shortlink.data.vo.VisitStatsVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -46,7 +45,7 @@ public interface VisitStatsMapper extends BaseMapper<VisitStatsDo> {
                                                      @Param("endTime") String endTime, @Param("accountNo") long accountNo);
 
     /**
-     * 按天查询访问趋势图
+     * 查询时间范围内的访问趋势图 天级别
      *
      * @param code
      * @param accountNo
@@ -54,6 +53,30 @@ public interface VisitStatsMapper extends BaseMapper<VisitStatsDo> {
      * @param endTime
      * @return
      */
-    List<VisitStatsDo> queryVisitTrendWithDay(@Param("code") String code, @Param("accountNo") long accountNo,
-                                              @Param("startTime") String startTime, @Param("endTime") String endTime);
+    List<VisitStatsDo> queryVisitTrendWithMultiDay(@Param("code") String code, @Param("accountNo") long accountNo,
+                                                   @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+
+    /**
+     * 查询时间范围内的访问趋势图 小时级别
+     *
+     * @param code
+     * @param accountNo
+     * @param startTime
+     * @return
+     */
+    List<VisitStatsDo> queryVisitTrendWithMultiHour(@Param("code") String code, @Param("accountNo") long accountNo,
+                                                    @Param("startTime") String startTime);
+
+    /**
+     * 查询时间范围内的访问趋势图 分钟级别
+     *
+     * @param code
+     * @param accountNo
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List<VisitStatsDo> queryVisitTrendWithMultiMinute(@Param("code") String code, @Param("accountNo") long accountNo,
+                                                      @Param("startTime") String startTime, @Param("endTime") String endTime);
 }
