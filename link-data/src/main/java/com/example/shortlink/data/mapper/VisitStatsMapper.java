@@ -2,6 +2,7 @@ package com.example.shortlink.data.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.shortlink.data.model.VisitStatsDo;
+import com.example.shortlink.data.vo.VisitStatsVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -29,5 +30,18 @@ public interface VisitStatsMapper extends BaseMapper<VisitStatsDo> {
      * @param size
      * @return
      */
-    List<VisitStatsDo> pageVisitRecord(@Param("code") String code, @Param("accountNo") long accountNo, @Param("from") int from, @Param("size") int size);
+    List<VisitStatsDo> pageVisitRecord(@Param("code") String code, @Param("accountNo") long accountNo,
+                                       @Param("from") int from, @Param("size") int size);
+
+    /**
+     * 根据时间范围查询地区访问分布
+     *
+     * @param code
+     * @param startTime
+     * @param endTime
+     * @param accountNo
+     * @return
+     */
+    List<VisitStatsDo> queryRegionVisitStartsWithDay(@Param("code") String code, @Param("startTime") String startTime,
+                                                     @Param("endTime") String endTime, @Param("accountNo") long accountNo);
 }

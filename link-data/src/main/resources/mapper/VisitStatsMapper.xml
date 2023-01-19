@@ -30,7 +30,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        code,referer,ts,is_new,account_no,province,city,ip,browser_name,os,device_type,start_time
+        code
+        ,referer,ts,is_new,account_no,province,city,ip,browser_name,os,device_type,start_time
     </sql>
 
     <!--计算总条数-->
@@ -41,11 +42,23 @@
           and code = #{code} limit 1000
     </select>
 
+    <!--分页查找访问记录-->
     <select id="pageVisitRecord" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from visit_stats where account_no = #{accountNo}
         and code = #{code} order by ts desc limit #{from}, #{size}
+    </select>
+
+    <!--根据时间范围查询地区访问分布-->
+    <select id="queryRegionVisitStartsWithDay" resultMap="BaseResultMap">
+        select province, city, sum(pv) pv_count, sum(uv) uv_count, count(DISTINCT ip) ip_count
+        from visit_stats
+        where account_no = #{accountNo}
+          and code = #{code}
+          and toYYYYMMDD(startTime) BETWEEN #{startTime} AND #{endTime}
+        group by province, city
+        order by pv_count desc
     </select>
 
 
