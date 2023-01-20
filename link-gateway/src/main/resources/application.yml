@@ -1,0 +1,12 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: link-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 212.129.255.88:8848
+        username: nacos
+        password: nacos
