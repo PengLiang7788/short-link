@@ -102,5 +102,5 @@ pay:
     # 自定义
     private-key-path: classpath:/cert/apiclient_key.pem
     success-return-url: https://www.nit.edu.cn
-    callback-url: http://anexwg.natappfree.cc/api/callback/order/v1/wechat
+    callback-url: http://2adjve.natappfree.cc/api/callback/order/v1/wechat
 
