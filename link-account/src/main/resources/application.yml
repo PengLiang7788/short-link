@@ -1,157 +1,162 @@
-server:
-  port: 8001
-spring:
-  application:
-    name: link-account
-  servlet:
-    multipart:
-      # 是否启用http上传
-      enabled: true
-      # 最大单个文件大小
-      max-file-size: 5MB
-      # 最大请求文件的大小
-      max-request-size: 10MB
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 212.129.255.88:8848
-        username: nacos
-        password: nacos
-  datasource:
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 20
-      idle-timeout: 600000
-      connection-timeout: 300000
-      max-lifetime: 1800000
-      auto-commit: true
-  redis:
-    client-type: jedis
-    host: 212.129.255.88
-    password: pl1008666.
-    port: 6379
-    jedis:
-      pool:
-        # 连接池的最大连接数(使用负值表示没有限制)
-        max-active: 100
-        # 连接池中的最大空闲连接
-        max-idle: 100
-        # 连接池中的最小空闲连接
-        min-idle: 100
-        # 连接池最大阻塞等待时间 (使用复制表示没有限制)
-        max-wait: 60000
-  mail:
-    host: smtp.163.com
-    username: m18107024620@163.com
-    password: LZHBTKVUDYXRRNYB
-    from: m18107024620@163.com
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: true
-            required: true
-          ssl:
-            enable: true
-    default-encoding: UTF-8
-
-  shardingsphere:
-    datasource:
-      #数据源名称
-      names: ds0
-      ds0:
-        connectionTimeoutMilliseconds: 30000
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        idleTimeoutMilliseconds: 60000
-        jdbc-url: jdbc:mysql://212.129.255.88:3306/shortlink_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-        maintenanceIntervalMilliseconds: 30000
-        maxLifetimeMilliseconds: 1800000
-        maxPoolSize: 50
-        minPoolSize: 50
-        username: root
-        password: pl1008666.
-        type: com.zaxxer.hikari.HikariDataSource
-    props:
-      # 打印执行的数据库以及语句
-      sql:
-        show: true
-    sharding:
-      tables:
-        traffic:
-          # 指定traffic表的数据分布情况，配置数据节点,行表达式标识符使用 ${...} 或 $->{...}，但前者与 Spring 本身的文件占位符冲突，所以在 Spring 环境中建议使用 $->{...}
-          actual-data-nodes: ds0.traffic_$->{0..1}
-          #水平分表策略+行表达式分片
-          table-strategy:
-            inline:
-              algorithm-expression: traffic_$->{ account_no % 2 }
-              sharding-column: account_no
-          #id生成策略
-          key-generator:
-            column: id
-            props:
-              worker:
-                id: ${workId}
-            #id生成策略
-            type: SNOWFLAKE
-  # rabbitmq 配置
-  rabbitmq:
-    host: 212.129.255.88
-    port: 5672
-    # 需要手工创建虚拟机
-    virtual-host: dev
-    username: admin
-    password: pl1008666.
-    # 消息确认方式 manual(手动ack) auto 自动ack 消息消费重试达到指定次数进到异常交换机和异常队列，需要改为自动确认消息
-    listener:
-      simple:
-        acknowledge-mode: auto
-        # 开启重试机制
-        retry:
-          enabled: true
-          # 最大重试次数
-          max-attempts: 4
-          # 重试消息的时间间隔 5秒
-          initial-interval: 5000
-
-sms:
-  app-code: 39dafca34fae4f95ac2593d6c7b292da
-  template-id: M105EABDEC
-# 阿里云OSS配置
-aliyun:
-  oss:
-    endpoint: oss-cn-hangzhou.aliyuncs.com
-    access-key-id: LTAI5tAtoRgNimet8jE4RMa9
-    access-key-secret: QzwwDCB23IHj0c4FkYdmb0bUKHfVkq
-    bucketname: peng-short-link
-
-# xxl-job配置
-logging:
-  config: classpath:logback.xml
-
-#调度中心部署地址，多个配置之间用逗号分离
-xxl:
-  job:
-    admin:
-      address: http://192.168.200.140:8080/xxl-job-admin
-    # 执行器token 非空时启用 xxl-job,access token
-    accessToken: pl1008666.
-    executor:
-      # 执行器app名称，需要和控制台那边配置一样，不然注册不上去
-      appname: traffic-app-executor
-      # [选填]执行器注册：优先使用该配置座位注册地址，为空时使用内嵌服务“IP:PORT”作为注册地址
-      # 从而更灵活的支持容器类型执行器动态ip和动态映射端口问题
-      #      address:
-      # [选填]执行器ip，默认为空表示自动获取IP(即springboot容器的ip和端口，可以自动获取，也可以指定)，多网卡时可手动设置指定ip，该ip不会绑定Host
-      ip:
-      # [选填]执行器端口，小于等于0则自动获取，默认端口为9999，单机部署多个执行器时，注意要配置不同执行器端口
-      port: 9999
-      # 执行器日志文件存储路径，需要对该路径拥有读写权限为空则使用默认路径
-      logpath: ./data/logs/xxl-job/executor
-      # 日志保留天数
-      logretentiondays: 30
-
-# 用于rpc调用token验证
-rpc:
-  token: pl1008666.
-
-  
+#server:
+#  port: 8001
+#spring:
+#  application:
+#    name: link-account
+#  servlet:
+#    multipart:
+#      # 是否启用http上传
+#      enabled: true
+#      # 最大单个文件大小
+#      max-file-size: 5MB
+#      # 最大请求文件的大小
+#      max-request-size: 10MB
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 212.129.255.88:8848
+#        username: nacos
+#        password: nacos
+#  datasource:
+#    hikari:
+#      minimum-idle: 5
+#      maximum-pool-size: 20
+#      idle-timeout: 600000
+#      connection-timeout: 300000
+#      max-lifetime: 1800000
+#      auto-commit: true
+#  redis:
+#    client-type: jedis
+#    host: 212.129.255.88
+#    password: pl1008666.
+#    port: 6379
+#    jedis:
+#      pool:
+#        # 连接池的最大连接数(使用负值表示没有限制)
+#        max-active: 100
+#        # 连接池中的最大空闲连接
+#        max-idle: 100
+#        # 连接池中的最小空闲连接
+#        min-idle: 100
+#        # 连接池最大阻塞等待时间 (使用复制表示没有限制)
+#        max-wait: 60000
+#  mail:
+#    host: smtp.163.com
+#    username: m18107024620@163.com
+#    password: LZHBTKVUDYXRRNYB
+#    from: m18107024620@163.com
+#    properties:
+#      mail:
+#        smtp:
+#          starttls:
+#            enable: true
+#            required: true
+#          ssl:
+#            enable: true
+#    default-encoding: UTF-8
+#
+#  shardingsphere:
+#    datasource:
+#      #数据源名称
+#      names: ds0
+#      ds0:
+#        connectionTimeoutMilliseconds: 30000
+#        driver-class-name: com.mysql.cj.jdbc.Driver
+#        idleTimeoutMilliseconds: 60000
+#        jdbc-url: jdbc:mysql://212.129.255.88:3306/shortlink_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+#        maintenanceIntervalMilliseconds: 30000
+#        maxLifetimeMilliseconds: 1800000
+#        maxPoolSize: 50
+#        minPoolSize: 50
+#        username: root
+#        password: pl1008666.
+#        type: com.zaxxer.hikari.HikariDataSource
+#    props:
+#      # 打印执行的数据库以及语句
+#      sql:
+#        show: true
+#    sharding:
+#      tables:
+#        traffic:
+#          # 指定traffic表的数据分布情况，配置数据节点,行表达式标识符使用 ${...} 或 $->{...}，但前者与 Spring 本身的文件占位符冲突，所以在 Spring 环境中建议使用 $->{...}
+#          actual-data-nodes: ds0.traffic_$->{0..1}
+#          #水平分表策略+行表达式分片
+#          table-strategy:
+#            inline:
+#              algorithm-expression: traffic_$->{ account_no % 2 }
+#              sharding-column: account_no
+#          #id生成策略
+#          key-generator:
+#            column: id
+#            props:
+#              worker:
+#                id: ${workId}
+#            #id生成策略
+#            type: SNOWFLAKE
+#  # rabbitmq 配置
+#  rabbitmq:
+#    host: 212.129.255.88
+#    port: 5672
+#    # 需要手工创建虚拟机
+#    virtual-host: dev
+#    username: admin
+#    password: pl1008666.
+#    # 消息确认方式 manual(手动ack) auto 自动ack 消息消费重试达到指定次数进到异常交换机和异常队列，需要改为自动确认消息
+#    listener:
+#      simple:
+#        acknowledge-mode: auto
+#        # 开启重试机制
+#        retry:
+#          enabled: true
+#          # 最大重试次数
+#          max-attempts: 4
+#          # 重试消息的时间间隔 5秒
+#          initial-interval: 5000
+#
+#sms:
+#  app-code: 39dafca34fae4f95ac2593d6c7b292da
+#  template-id: M105EABDEC
+## 阿里云OSS配置
+#aliyun:
+#  oss:
+#    endpoint: oss-cn-hangzhou.aliyuncs.com
+#    access-key-id: LTAI5tAtoRgNimet8jE4RMa9
+#    access-key-secret: QzwwDCB23IHj0c4FkYdmb0bUKHfVkq
+#    bucketname: peng-short-link
+#
+##调度中心部署地址，多个配置之间用逗号分离
+#xxl:
+#  job:
+#    admin:
+#      address: http://192.168.200.140:8080/xxl-job-admin
+#    # 执行器token 非空时启用 xxl-job,access token
+#    accessToken: pl1008666.
+#    executor:
+#      # 执行器app名称，需要和控制台那边配置一样，不然注册不上去
+#      appname: traffic-app-executor
+#      # [选填]执行器注册：优先使用该配置座位注册地址，为空时使用内嵌服务“IP:PORT”作为注册地址
+#      # 从而更灵活的支持容器类型执行器动态ip和动态映射端口问题
+#      #      address:
+#      # [选填]执行器ip，默认为空表示自动获取IP(即springboot容器的ip和端口，可以自动获取，也可以指定)，多网卡时可手动设置指定ip，该ip不会绑定Host
+#      ip:
+#      # [选填]执行器端口，小于等于0则自动获取，默认端口为9999，单机部署多个执行器时，注意要配置不同执行器端口
+#      port: 9999
+#      # 执行器日志文件存储路径，需要对该路径拥有读写权限为空则使用默认路径
+#      logpath: ./data/logs/xxl-job/executor
+#      # 日志保留天数
+#      logretentiondays: 30
+#
+## 用于rpc调用token验证
+#rpc:
+#  token: pl1008666.
+#
+#logging:
+#  level:
+#    com:
+#      alibaba:
+#        nacos:
+#          client:
+#            config:
+#              impl: WARN
+#    root: info
+#    config: classpath:logback.xml

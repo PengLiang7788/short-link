@@ -19,18 +19,19 @@ public class TimeUtil {
     /**
      * 默认日期格式
      */
-    private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER  = DateTimeFormatter.ofPattern(DEFAULT_PATTERN);
+    private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_PATTERN);
 
     private static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();
 
 
     /**
      * LocalDateTime 转 字符串，指定日期格式
+     *
      * @param localDateTime
      * @param pattern
      * @return
      */
-    public static String format(LocalDateTime localDateTime, String pattern){
+    public static String format(LocalDateTime localDateTime, String pattern) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         String timeStr = formatter.format(localDateTime.atZone(DEFAULT_ZONE_ID));
         return timeStr;
@@ -39,22 +40,24 @@ public class TimeUtil {
 
     /**
      * Date 转 字符串, 指定日期格式
+     *
      * @param time
      * @param pattern
      * @return
      */
-    public static String format(Date time, String pattern){
+    public static String format(Date time, String pattern) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         String timeStr = formatter.format(time.toInstant().atZone(DEFAULT_ZONE_ID));
         return timeStr;
     }
 
     /**
-     *  Date 转 字符串，默认日期格式
+     * Date 转 字符串，默认日期格式
+     *
      * @param time
      * @return
      */
-    public static String format(Date time){
+    public static String format(Date time) {
 
         String timeStr = DEFAULT_DATE_TIME_FORMATTER.format(time.toInstant().atZone(DEFAULT_ZONE_ID));
         return timeStr;
@@ -87,6 +90,7 @@ public class TimeUtil {
 
     /**
      * 获取当天剩余的秒数,用于流量包过期配置
+     *
      * @param currentDate
      * @return
      */

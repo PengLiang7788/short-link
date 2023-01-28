@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: link-account
+  cloud:
+    nacos:
+      config:
+        server-addr: 212.129.255.88:8848
+        file-extension: yaml
+        enabled: true
+        username: nacos
+        password: nacos
+        namespace: public
+        config-long-poll-timeout: 600000
+  profiles:
+    active: dev
