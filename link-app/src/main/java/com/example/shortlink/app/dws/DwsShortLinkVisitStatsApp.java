@@ -46,7 +46,7 @@ public class DwsShortLinkVisitStatsApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        env.setParallelism(1);
+//        env.setParallelism(1);
 
         //1、获取多个数据
         FlinkKafkaConsumer<String> shortLinkSource =

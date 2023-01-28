@@ -38,7 +38,7 @@ public class DwmUniqueVisitorApp {
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        env.setParallelism(1);
+//        env.setParallelism(1);
 
 //        DataStream<String> ds = env.socketTextStream("192.168.200.140", 8888);
 
