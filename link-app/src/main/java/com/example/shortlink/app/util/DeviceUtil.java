@@ -120,12 +120,15 @@ public class DeviceUtil {
         if (StringUtils.isBlank(agent)) {
             return osVersion;
         }
-        String[] strArr = agent.substring(agent.indexOf("(") + 1, agent.indexOf(")")).split(";");
-        if (null == strArr || strArr.length == 0) {
+        if (agent.indexOf("(")>=0 && agent.indexOf(")")>=0){
+            String[] strArr = agent.substring(agent.indexOf("(") + 1, agent.indexOf(")")).split(";");
+            if (null == strArr || strArr.length == 0) {
+                return osVersion;
+            }
+            osVersion = strArr[1];
             return osVersion;
         }
-        osVersion = strArr[1];
-        return osVersion;
+        return "";
     }
 
     /**

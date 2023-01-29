@@ -15,7 +15,7 @@ public class TimeUtil {
      */
     private static final String DEFAULT_PATTERN = "yyyy-MM-dd";
 
-    private static final String DEFAULT_PATTERN_WITH_TIME = "yyyy-MM-dd hh:mm:ss";
+    private static final String DEFAULT_PATTERN_WITH_TIME = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 默认日期格式

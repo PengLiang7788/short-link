@@ -186,8 +186,8 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             payInfoVo.setOutTradeNo(outTradeNo);
             payInfoVo.setAccountNo(accountNo);
 
-            //TODO 向第三方支付平台查询订单状态
-            String payResult = "";
+            // 向第三方支付平台查询订单状态
+            String payResult = payFactory.queryPayStatus(payInfoVo);
             if (StringUtils.isBlank(payResult)) {
                 // 如果为空 则未支付成功 本地取消订单
                 productOrderManager.updateOrderPayState(outTradeNo, accountNo,
@@ -198,8 +198,26 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 log.warn("支付成功，但是微信回调通知失败，需要排查问题:{}", eventMessage);
                 productOrderManager.updateOrderPayState(outTradeNo, accountNo,
                         ProductOrderStateEnum.PAY.name(), ProductOrderStateEnum.NEW.name());
-                //TODO 触发支付成功后的逻辑
+                // 触发支付成功后的逻辑
+                Map<String, Object> content = new HashMap<>(4);
+                content.put("buyNum", productOrderDo.getBuyNum());
+                content.put("outTradeNo", outTradeNo);
+                content.put("accountNo", accountNo);
+                content.put("product", productOrderDo.getProductSnapshot());
 
+                // 构建消息
+                EventMessage successMessage = EventMessage.builder().bizId(outTradeNo)
+                        .accountNo(accountNo).messageId(outTradeNo).content(JsonUtil.obj2Json(content))
+                        .eventMessageType(EventMessageType.PRODUCT_ORDER_PAY.name()).build();
+
+                // 如果key不存在，则设置成功，返回true
+                Boolean flag = redisTemplate.opsForValue().setIfAbsent(outTradeNo, "OK", 3, TimeUnit.DAYS);
+
+                if (flag) {
+                    rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange()
+                            , rabbitMQConfig.getOrderUpdateTrafficRoutingKey(), successMessage);
+                    return false;
+                }
             }
         }
 

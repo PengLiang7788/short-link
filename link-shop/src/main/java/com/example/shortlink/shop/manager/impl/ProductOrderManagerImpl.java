@@ -93,6 +93,7 @@ public class ProductOrderManagerImpl implements ProductOrderManager {
         if (StringUtils.isNotEmpty(state)) {
             wrapper.eq(ProductOrderDo::getState, state);
         }
+        wrapper.orderByDesc(ProductOrderDo::getGmtCreate);
         Page<ProductOrderDo> orderDoPage = productOrderMapper.selectPage(pageInfo, wrapper);
 
         List<ProductOrderDo> productOrderDoList = orderDoPage.getRecords();

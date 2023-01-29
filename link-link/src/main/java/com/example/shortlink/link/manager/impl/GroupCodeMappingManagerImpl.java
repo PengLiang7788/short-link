@@ -90,7 +90,8 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
                 .selectPage(pageInfo, new LambdaQueryWrapper<GroupCodeMappingDo>()
                         .eq(GroupCodeMappingDo::getAccountNo, accountNo)
                         .eq(GroupCodeMappingDo::getGroupId, groupId)
-                        .eq(GroupCodeMappingDo::getDel, 0));
+                        .eq(GroupCodeMappingDo::getDel, 0)
+                        .orderByDesc(GroupCodeMappingDo::getGmtCreate));
 
         Map<String, Object> pageMap = new HashMap<>();
         pageMap.put("total_record", groupCodeMappingDoPage.getTotal());
