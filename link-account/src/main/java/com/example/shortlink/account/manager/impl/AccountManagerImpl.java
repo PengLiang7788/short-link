@@ -28,6 +28,7 @@ public class AccountManagerImpl implements AccountManager {
 
     /**
      * 根据手机号查找账户
+     *
      * @param phone
      * @return
      */
@@ -36,5 +37,17 @@ public class AccountManagerImpl implements AccountManager {
         List<AccountDO> accountDOList = accountMapper
                 .selectList(new LambdaQueryWrapper<AccountDO>().eq(AccountDO::getPhone, phone));
         return accountDOList;
+    }
+
+    /**
+     * 查询用户个人信息
+     *
+     * @param accountNo
+     * @return
+     */
+    @Override
+    public AccountDO detail(long accountNo) {
+        AccountDO accountDO = accountMapper.selectOne(new LambdaQueryWrapper<AccountDO>().eq(AccountDO::getAccountNo, accountNo));
+        return accountDO;
     }
 }

@@ -23,4 +23,10 @@ public interface AccountService {
      */
     JsonData login(AccountLoginRequest loginRequest);
 
+    /**
+     * 查询个人信息
+     * @return
+     */
+    JsonData detail();
+
 }

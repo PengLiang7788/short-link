@@ -8,10 +8,12 @@ import com.example.shortlink.account.manager.AccountManager;
 import com.example.shortlink.account.model.AccountDO;
 import com.example.shortlink.account.service.AccountService;
 import com.example.shortlink.account.service.NotifyService;
+import com.example.shortlink.account.vo.AccountVo;
 import com.example.shortlink.common.enums.AuthTypeEnum;
 import com.example.shortlink.common.enums.BizCodeEnum;
 import com.example.shortlink.common.enums.EventMessageType;
 import com.example.shortlink.common.enums.SendCodeEnum;
+import com.example.shortlink.common.interceptor.LoginInterceptor;
 import com.example.shortlink.common.model.EventMessage;
 import com.example.shortlink.common.model.LoginUser;
 import com.example.shortlink.common.util.CommonUtil;
@@ -129,6 +131,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
+     * 查询个人信息
+     *
+     * @return
+     */
+    @Override
+    public JsonData detail() {
+        LoginUser loginUser = LoginInterceptor.threadLocal.get();
+        AccountDO accountDO = accountManager.detail(loginUser.getAccountNo());
+        AccountVo accountVo = new AccountVo();
+        BeanUtils.copyProperties(accountDO,accountVo);
+        return JsonData.buildSuccess(accountVo);
+    }
+
+    /**
      * 用户初始化，发放福利:发放流量包
      *
      * @param accountDO
@@ -143,6 +159,6 @@ public class AccountServiceImpl implements AccountService {
 
         // 发送发放流量包消息
         rabbitTemplate.convertAndSend(rabbitMQConfig.getTrafficEventExchange(),
-                rabbitMQConfig.getTrafficFreeInitRoutingKey(),eventMessage);
+                rabbitMQConfig.getTrafficFreeInitRoutingKey(), eventMessage);
     }
 }
