@@ -30,6 +30,11 @@ public class LinkApiController {
     private LogService logService;
 
     /**
+     * 低于1980则是永久有效
+     */
+    private static final long FOREVER_TIME = 315504000000L;
+
+    /**
      * 根据短链码解析出原始网址
      * <p>
      * 解析301还是302，这边是返回http code是302
@@ -87,7 +92,7 @@ public class LinkApiController {
             if (ShortLinkStateEnum.ACTIVE.name().equalsIgnoreCase(shortLinkVo.getState())) {
                 return true;
             }
-        } else if (shortLinkVo != null && shortLinkVo.getExpired().getTime() == -1) {
+        } else if (shortLinkVo != null && shortLinkVo.getExpired().getTime() < FOREVER_TIME) {
             if (ShortLinkStateEnum.ACTIVE.name().equalsIgnoreCase(shortLinkVo.getState())) {
                 return true;
             }

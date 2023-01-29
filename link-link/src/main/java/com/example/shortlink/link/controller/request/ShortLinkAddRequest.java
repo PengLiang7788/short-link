@@ -1,5 +1,6 @@
 package com.example.shortlink.link.controller.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -38,6 +39,7 @@ public class ShortLinkAddRequest {
     /**
      * 过期时间
      */
+    @JsonFormat(locale = "zh",timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     private Date expired;
 
 }

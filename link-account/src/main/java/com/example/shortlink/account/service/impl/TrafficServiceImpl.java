@@ -147,23 +147,23 @@ public class TrafficServiceImpl implements TrafficService {
             TrafficTaskDO trafficTaskDO = trafficTaskManager.findByIdAndAccountNo(trafficTaskId, accountNo);
 
             // 非空且锁定
-            if (trafficTaskDO != null && trafficTaskDO.getLockState().equalsIgnoreCase(TaskStateEnum.LOCK.name())){
+            if (trafficTaskDO != null && trafficTaskDO.getLockState().equalsIgnoreCase(TaskStateEnum.LOCK.name())) {
 
                 JsonData jsonData = shortLinkFeignService.check(trafficTaskDO.getBizId());
 
-                if (jsonData.getCode() != 0){
+                if (jsonData.getCode() != 0) {
                     log.error("创建短链失败，流量包回滚");
 
                     String useDateStr = TimeUtil.format(trafficTaskDO.getGmtCreate(), "yyyy-MM-dd");
 
-                    trafficManager.releaseUsedTimes(accountNo,trafficTaskDO.getTrafficId(),1,useDateStr);
+                    trafficManager.releaseUsedTimes(accountNo, trafficTaskDO.getTrafficId(), 1, useDateStr);
 
                     // 恢复流量包应该删除这个key
                     String totalTrafficTimeKey = String.format(RedisKey.DAY_TOTAL_TRAFFIC, accountNo);
                     redisTemplate.delete(totalTrafficTimeKey);
                 }
                 // 可以更新状态，定时删除
-                trafficTaskManager.deleteByIdAndAccountNo(trafficTaskId,accountNo);
+                trafficTaskManager.deleteByIdAndAccountNo(trafficTaskId, accountNo);
             }
 
 
@@ -186,11 +186,8 @@ public class TrafficServiceImpl implements TrafficService {
         // 获取流量包列表
         List<TrafficDO> records = trafficDOIPage.getRecords();
 
-        List<TrafficVo> trafficVoList = records.stream().map(item -> {
-            TrafficVo trafficVo = new TrafficVo();
-            BeanUtils.copyProperties(item, trafficVo);
-            return trafficVo;
-        }).collect(Collectors.toList());
+        List<TrafficVo> trafficVoList = records.stream().map(item -> beanProcess(item))
+                .collect(Collectors.toList());
 
         Map<String, Object> map = new HashMap<>();
         map.put("total_record", trafficDOIPage.getTotal());
@@ -210,8 +207,7 @@ public class TrafficServiceImpl implements TrafficService {
     public TrafficVo detail(long trafficId) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
         TrafficDO trafficDO = trafficManager.findByIdAndAccountNo(trafficId, accountNo);
-        TrafficVo trafficVo = new TrafficVo();
-        BeanUtils.copyProperties(trafficDO, trafficVo);
+        TrafficVo trafficVo = beanProcess(trafficDO);
 
         return trafficVo;
     }
@@ -350,5 +346,21 @@ public class TrafficServiceImpl implements TrafficService {
         useTrafficVo.setUnUpdateTrafficIds(unUpdateTrafficIds);
         useTrafficVo.setDayTotalLeftTimes(dayTotalLeftTimes);
         return useTrafficVo;
+    }
+
+    private TrafficVo beanProcess(TrafficDO trafficDO) {
+        TrafficVo trafficVo = new TrafficVo();
+        BeanUtils.copyProperties(trafficDO, trafficVo);
+
+        //惰性更新，前端显示问题，根据更新时间进行判断是否需要显示最新的流量包
+        String todayStr = TimeUtil.format(new Date(), "yyyy-MM-dd");
+        String trafficUpdateStr = TimeUtil.format(trafficDO.getGmtModified(), "yyyy-MM-dd");
+
+        if (!todayStr.equalsIgnoreCase(trafficUpdateStr)) {
+            trafficVo.setDayUsed(0);
+        }
+
+        return trafficVo;
+
     }
 }
