@@ -14,7 +14,7 @@
 #  cloud:
 #    nacos:
 #      discovery:
-#        server-addr: 212.129.255.88:8848
+#        server-addr: 主机地址:8848
 #        username: nacos
 #        password: nacos
 #  datasource:
@@ -27,7 +27,7 @@
 #      auto-commit: true
 #  redis:
 #    client-type: jedis
-#    host: 212.129.255.88
+#    host: 主机地址
 #    password: pl1008666.
 #    port: 6379
 #    jedis:
@@ -42,9 +42,9 @@
 #        max-wait: 60000
 #  mail:
 #    host: smtp.163.com
-#    username: m18107024620@163.com
-#    password: LZHBTKVUDYXRRNYB
-#    from: m18107024620@163.com
+#    username:账号
+#    password: 密码
+#    from: 
 #    properties:
 #      mail:
 #        smtp:
@@ -63,7 +63,7 @@
 #        connectionTimeoutMilliseconds: 30000
 #        driver-class-name: com.mysql.cj.jdbc.Driver
 #        idleTimeoutMilliseconds: 60000
-#        jdbc-url: jdbc:mysql://212.129.255.88:3306/shortlink_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+#        jdbc-url: jdbc:mysql://主机地址/shortlink_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
 #        maintenanceIntervalMilliseconds: 30000
 #        maxLifetimeMilliseconds: 1800000
 #        maxPoolSize: 50
@@ -95,12 +95,12 @@
 #            type: SNOWFLAKE
 #  # rabbitmq 配置
 #  rabbitmq:
-#    host: 212.129.255.88
+#    host: 主机地址
 #    port: 5672
 #    # 需要手工创建虚拟机
 #    virtual-host: dev
-#    username: admin
-#    password: pl1008666.
+#    username: 
+#    password: 
 #    # 消息确认方式 manual(手动ack) auto 自动ack 消息消费重试达到指定次数进到异常交换机和异常队列，需要改为自动确认消息
 #    listener:
 #      simple:
@@ -114,21 +114,21 @@
 #          initial-interval: 5000
 #
 #sms:
-#  app-code: 39dafca34fae4f95ac2593d6c7b292da
-#  template-id: M105EABDEC
+#  app-code: 
+#  template-id: 
 ## 阿里云OSS配置
 #aliyun:
 #  oss:
-#    endpoint: oss-cn-hangzhou.aliyuncs.com
-#    access-key-id: LTAI5tAtoRgNimet8jE4RMa9
-#    access-key-secret: QzwwDCB23IHj0c4FkYdmb0bUKHfVkq
-#    bucketname: peng-short-link
+#    endpoint: 
+#    access-key-id: 
+#    access-key-secret: 
+#    bucketname: 
 #
 ##调度中心部署地址，多个配置之间用逗号分离
 #xxl:
 #  job:
 #    admin:
-#      address: http://192.168.200.140:8080/xxl-job-admin
+#      address: http://主机地址/xxl-job-admin
 #    # 执行器token 非空时启用 xxl-job,access token
 #    accessToken: pl1008666.
 #    executor:
@@ -148,7 +148,7 @@
 #
 ## 用于rpc调用token验证
 #rpc:
-#  token: pl1008666.
+#  token: 
 #
 #logging:
 #  level:
